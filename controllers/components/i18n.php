@@ -20,16 +20,18 @@ class I18nComponent extends Object {
 /**
  * Components
  *
- * @var array $components
+ * @var array
+ * @access public
  */
 	public $components = array('Cookie', 'Session');
 
 /**
  * Controller
  *
- * @var mixed $controller
+ * @var Object`
+ * @access public
  */
-	public $controller = null;
+	public $Controller = null;
 
 /**
  * Initialize Callback
@@ -45,7 +47,7 @@ class I18nComponent extends Object {
 	}
 
 /**
- * Sets the language
+ * Sets the language settings 
  *
  * @return void
  */
@@ -73,6 +75,7 @@ class I18nComponent extends Object {
 			Router::connectNamed(array($this->Controller->params['lang']));
 		}
 		Configure::write('Config.language', $this->Controller->params['lang']);
-		$this->Session->write('Config.language',  $this->Controller->params['lang']);
+		$this->Session->write('Config.language', $this->Controller->params['lang']);
 	}
 }
+?>

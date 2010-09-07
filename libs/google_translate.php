@@ -121,7 +121,7 @@ class GoogleTranslate extends Object {
 			$query['key'] = $this->key;
 		}
 
-		$response = $this->Http->get($uri, $query);
+		$response = $this->Http->post($uri, $query);
 		if ($this->Http->response['status']['code'] == 200) {
 			$response = json_decode($response, true);
 			if ($response['responseStatus'] != 200) {
