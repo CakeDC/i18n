@@ -57,8 +57,9 @@ class I18nableBehavior extends ModelBehavior {
 			if (isset($query['language'])) {
 				$language = $query['language'];
 			}
-			$query['conditions'][$Model->alias][$settings['languageField']] = $language;
+			$query['conditions'][$Model->alias . '.' . $settings['languageField']] = $language;
 		}
+		return $query;
 	}
 
 /**
