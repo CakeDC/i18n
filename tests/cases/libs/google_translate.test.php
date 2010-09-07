@@ -81,8 +81,8 @@ class GoogleTranslateTestCase extends CakeTestCase {
 				'format' => 'text',
 				'v' => '1.0',
 				'key' => 'myApiKey');
-			$this->Http->expectOnce('get', array('http://ajax.googleapis.com/ajax/services/language/', $expected));
-			$this->Http->setReturnValue('get', '{"responseData": {"translatedText":"Hello"}, "responseDetails": null, "responseStatus": 200}');
+			$this->Http->expectOnce('post', array('http://ajax.googleapis.com/ajax/services/language/', $expected));
+			$this->Http->setReturnValue('post', '{"responseData": {"translatedText":"Hello"}, "responseDetails": null, "responseStatus": 200}');
 			$this->Http->response['status']['code'] = 200;
 		}
 		$this->assertEqual($result, 'Hello');
@@ -102,8 +102,8 @@ class GoogleTranslateTestCase extends CakeTestCase {
 				'format' => 'html',
 				'v' => '1.0',
 				'key' => 'myApiKey');
-			$this->Http->expectOnce('get', array('http://ajax.googleapis.com/ajax/services/language/', $expected));
-			$this->Http->setReturnValue('get', '{"responseData": {"translatedText":"<strong>Hello</strong>"}, "responseDetails": null, "responseStatus": 200}');
+			$this->Http->expectOnce('post', array('http://ajax.googleapis.com/ajax/services/language/', $expected));
+			$this->Http->setReturnValue('post', '{"responseData": {"translatedText":"<strong>Hello</strong>"}, "responseDetails": null, "responseStatus": 200}');
 			$this->Http->response['status']['code'] = 200;
 		}
 		$this->assertEqual($result, '<strong>Hello</strong>');
