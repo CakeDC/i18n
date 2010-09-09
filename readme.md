@@ -1,4 +1,6 @@
-## Google translation implementation
+# Internationalization plugin for CakePHP #
+
+## Google translation implementation ##
 
 All areas that contain translatable content should have the following structure:
 
