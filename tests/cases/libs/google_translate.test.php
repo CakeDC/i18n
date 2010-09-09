@@ -43,7 +43,7 @@ class GoogleTranslateTestCase extends CakeTestCase {
  * 
  * @var boolean
  */
-	private $__mockSocket = false;
+	private $__mockSocket = true;
 
 /**
  * startTest method
@@ -73,18 +73,19 @@ class GoogleTranslateTestCase extends CakeTestCase {
  * @return void
  */
 	public function testTranslate() {
-		$result = $this->GoogleTranslate->translate('Bonjour', 'fr', 'en');
 		if ($this->__mockSocket) {
+			$this->GoogleTranslate->useUserIp = false;
 			$expected = array(
 				'q' => 'Bonjour',
 				'langpair' => 'fr|en',
 				'format' => 'text',
 				'v' => '1.0',
 				'key' => 'myApiKey');
-			$this->Http->expectOnce('post', array('http://ajax.googleapis.com/ajax/services/language/', $expected));
+			$this->Http->expectOnce('post', array('http://ajax.googleapis.com/ajax/services/language/translate', $expected));
 			$this->Http->setReturnValue('post', '{"responseData": {"translatedText":"Hello"}, "responseDetails": null, "responseStatus": 200}');
 			$this->Http->response['status']['code'] = 200;
 		}
+		$result = $this->GoogleTranslate->translate('Bonjour', 'fr', 'en');
 		$this->assertEqual($result, 'Hello');
 	}
 	
@@ -94,18 +95,20 @@ class GoogleTranslateTestCase extends CakeTestCase {
  * @return void
  */
 	public function testTranslateHtml() {
-		$result = $this->GoogleTranslate->translate('<strong>Bonjour</strong>', 'fre', 'en', true);
 		if ($this->__mockSocket) {
+			$this->GoogleTranslate->useUserIp = false;
 			$expected = array(
 				'q' => '<strong>Bonjour</strong>',
 				'langpair' => 'fr|en',
 				'format' => 'html',
 				'v' => '1.0',
 				'key' => 'myApiKey');
-			$this->Http->expectOnce('post', array('http://ajax.googleapis.com/ajax/services/language/', $expected));
+			$this->Http->expectOnce('post', array('http://ajax.googleapis.com/ajax/services/language/translate', $expected));
 			$this->Http->setReturnValue('post', '{"responseData": {"translatedText":"<strong>Hello</strong>"}, "responseDetails": null, "responseStatus": 200}');
 			$this->Http->response['status']['code'] = 200;
 		}
+		$result = $this->GoogleTranslate->translate('<strong>Bonjour</strong>', 'fre', 'en', true);
 		$this->assertEqual($result, '<strong>Hello</strong>');
 	}
+
 }
