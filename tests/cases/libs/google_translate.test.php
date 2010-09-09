@@ -76,9 +76,9 @@ class GoogleTranslateTestCase extends CakeTestCase {
 		if ($this->__mockSocket) {
 			$this->GoogleTranslate->useUserIp = false;
 			$expected = array(
-				'q' => 'Bonjour',
 				'langpair' => 'fr|en',
 				'format' => 'text',
+				'q' => 'Bonjour',
 				'v' => '1.0',
 				'key' => 'myApiKey');
 			$this->Http->expectOnce('post', array('http://ajax.googleapis.com/ajax/services/language/translate', $expected));
@@ -98,9 +98,9 @@ class GoogleTranslateTestCase extends CakeTestCase {
 		if ($this->__mockSocket) {
 			$this->GoogleTranslate->useUserIp = false;
 			$expected = array(
-				'q' => '<strong>Bonjour</strong>',
 				'langpair' => 'fr|en',
 				'format' => 'html',
+				'q' => '<strong>Bonjour</strong>',
 				'v' => '1.0',
 				'key' => 'myApiKey');
 			$this->Http->expectOnce('post', array('http://ajax.googleapis.com/ajax/services/language/translate', $expected));
@@ -111,4 +111,53 @@ class GoogleTranslateTestCase extends CakeTestCase {
 		$this->assertEqual($result, '<strong>Hello</strong>');
 	}
 
+/**
+ * Test the translate API call with a text longer than the Google Translate API limit (5000 chars)
+ *
+ * @return void
+ */
+	public function testTranslateLongText() {
+		$lipsum = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. ';
+		$text = 'Bonjour ... ';
+		$expectedTranslation = 'Hello ... ';
+		while (strlen($text) <= 6000) {
+			$text .= $lipsum;
+			$expectedTranslation .= $lipsum;
+		}
+		$expectedTranslation = trim($expectedTranslation);
+
+		if ($this->__mockSocket) {
+			// Expects a first call with "Bonjour" and as many lipsums as needed to fill the 5000 chars
+			$this->GoogleTranslate->useUserIp = false;
+			$expectedText = 'Bonjour ... ';
+			$response = 'Hello ... ';
+			while(strlen($expectedText) + strlen($lipsum) < 5000) {
+				$expectedText .= $lipsum;
+				$response .= $lipsum;
+			}
+
+			$expected = array(
+				'langpair' => 'fr|en',
+				'format' => 'text',
+				'q' => $expectedText,
+				'v' => '1.0',
+				'key' => 'myApiKey');
+			$this->Http->expectAt(0, 'post', array('http://ajax.googleapis.com/ajax/services/language/translate', $expected));
+			$this->Http->setReturnValueAt(0, 'post', '{"responseData": {"translatedText":"' . trim($response) . '"}, "responseDetails": null, "responseStatus": 200}');
+
+			// Expects a second call with the remaining lipsums filling the 6000 total chars
+			$limit = 6000 - strlen($expectedText);
+			$expectedText = '';
+			while(strlen($expectedText) <= $limit) {
+				$expectedText .= $lipsum;
+			}
+			$expected['q'] = $expectedText;
+			$this->Http->expectAt(1, 'post', array('http://ajax.googleapis.com/ajax/services/language/translate', $expected));
+			$this->Http->setReturnValueAt(1, 'post', '{"responseData": {"translatedText":"' . trim($expectedText) . '"}, "responseDetails": null, "responseStatus": 200}');
+			$this->Http->response['status']['code'] = 200;
+		}
+		
+		$result = $this->GoogleTranslate->translate($text, 'fr', 'en');
+		$this->assertEqual($result, $expectedTranslation);
+	}
 }

@@ -58,6 +58,14 @@ class GoogleTranslate extends Object {
  * @var string
  */
 	private $__version = '1.0';
+
+/**
+ * Text length limit for Google Translate API calls
+ * Translating texts longer than this limit will result in an error from Google Translate.   
+ * 
+ * @var string
+ */
+	private $__limit = 5000;
 	
 /**
  * Constructor
@@ -88,14 +96,20 @@ class GoogleTranslate extends Object {
 		
 		$url = $this->__apiEndpoint . 'translate';
 		$query = array(
-			'q' => $text,
 			'langpair' => $source . '|' . $dest,
 			'format' => $isHtml ? 'html' : 'text');
-		$result = $this->_doCall($url, $query);
+		$texts = $this->_splitText($text, $this->__limit); 
 		
-		return isset($result['translatedText']) ? urldecode($result['translatedText']) : false;
+		$translation = '';
+		foreach($texts as $text) {
+			$query['q'] = $text;
+			$result = $this->_doCall($url, $query);
+			$translation = isset($result['translatedText']) ? $translation . urldecode($result['translatedText']) . ' ' : false;
+		}
+		
+		return is_string($translation) ? trim($translation) : $translation;
 	}
-
+	
 /**
  * Wrapper for calling the remote API
  * 
@@ -149,5 +163,35 @@ class GoogleTranslate extends Object {
 			$langCode = $L10n->map($langCode);
 		}
 		return $langCode;
+	}
+
+/**
+ * Splits a text in smaller parts having a length lower than $maxLength
+ * Texts would be cut after a period.
+ * 
+ * @TODO Improve me to work with HTML
+ * @param string $text Text to split in smaller parts
+ * @param int $maxLength Maximum length of a text part
+ * @return array 
+ */
+	protected function _splitText($text, $maxLength) {
+		if (strlen($text) <= $maxLength) {
+			$texts = array($text);
+		} else {
+			$sentences = preg_split("/[\.][\s]+/", $text);
+			$texts = array('');
+			$i = 0;
+			foreach($sentences as $sentence) {
+				if (empty($sentence)) { continue; }
+				$sentence .= '. ';
+				if (strlen($texts[$i]) + strlen($sentence) < $maxLength) {
+					$texts[$i] .= $sentence; 
+				} else {
+					$i++;
+					$texts[$i] = $sentence;
+				}
+			}
+		}
+		return $texts;
 	}
 }
