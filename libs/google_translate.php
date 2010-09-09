@@ -176,6 +176,13 @@ class GoogleTranslate extends Object {
  * @return array 
  */
 	protected function _splitText($text, $maxLength, $html = false) {
+		if ($html) {
+			App::import('Lib', 'I18n.HtmlTokenizer');
+			$tokenizer = new HtmlTokenizer($text);
+			$t = $tokenizer->tokens($maxLength);
+			debug($t, true);
+			return $t;
+		}
 		if (strlen($text) <= $maxLength) {
 			$texts = array($text);
 		} else {
