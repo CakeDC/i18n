@@ -180,7 +180,6 @@ class GoogleTranslate extends Object {
 			App::import('Lib', 'I18n.HtmlTokenizer');
 			$tokenizer = new HtmlTokenizer($text);
 			$t = $tokenizer->tokens($maxLength);
-			debug($t, true);
 			return $t;
 		}
 		if (strlen($text) <= $maxLength) {

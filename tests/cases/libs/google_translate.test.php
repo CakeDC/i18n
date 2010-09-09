@@ -212,25 +212,24 @@ class GoogleTranslateTestCase extends CakeTestCase {
 			<h1>Hello</h1>
 			<p>This is a text with <strong>more difficult</strong>HTML code.</p>
 			<br />
-			<p>
-				And other things: <a href="http://google.com">Google</a>,
-				<img src="http://google.com/ing.png" /> for instance.
-			</p>';
+			<p>And other things: <a href="http://google.com">Google</a>
+				<img src="http://google.com/ing.png" /> for instance.</p>';
 		$result = $this->GoogleTranslate->splitText($text, 40, true);
 		$expected = array(
 			'<h1>Hello</h1>',
-			'<p>Sentence one. And two.</p>',
 			'<p>',
 			'This is a text with ',
 			'<strong>more difficult</strong>',
 			'HTML code.',
 			'</p>',
-			'<br /><p>',
+			'<br />',
+			'<p>',
 			'And other things: ',
 			'<a href="http://google.com">Google</a>',
-			'<img src="http://google.com/ing.png" />',
+			'<img src="http://google.com/ing.png">',
 			' for instance.',
-			'</p>');
+			'</p>'
+		);
 		$this->assertEqual($result, $expected);
 	}
 }
