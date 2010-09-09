@@ -21,8 +21,8 @@ Mock::generate('HttpSocket');
  *
  */
 class SpyGoogleTranslate extends GoogleTranslate {
-	public function splitText($text, $maxLength) {
-		return $this->_splitText($text, $maxLength);
+	public function splitText($text, $maxLength, $html = false) {
+		return $this->_splitText($text, $maxLength, $html);
 	}
 }
 
@@ -187,4 +187,50 @@ class GoogleTranslateTestCase extends CakeTestCase {
 		$this->assertEqual($result, $expected);
 	}
 
+/**
+ * Test splitting a text that contains html code
+ *
+ * @return void
+ */
+	public function testSplitHtml() {
+		$text = '
+			<h1>Hello</h1>
+			<p>Sentence one. And two.</p>
+			<p>This is a text with HTML code.</p>
+			<code><?php echo "test"; ?></code>';
+		$result = $this->GoogleTranslate->splitText($text, 30, true);
+		$expected = array(
+			'<h1>Hello</h1>',
+			'<p>Sentence one. And two.</p>',
+			'<p>',
+			'This is a text with HTML code.',
+			'</p>',
+			'<code><?php echo "test"; ?></code>');
+		$this->assertEqual($result, $expected);
+
+		$text = '
+			<h1>Hello</h1>
+			<p>This is a text with <strong>more difficult</strong>HTML code.</p>
+			<br />
+			<p>
+				And other things: <a href="http://google.com">Google</a>,
+				<img src="http://google.com/ing.png" /> for instance.
+			</p>';
+		$result = $this->GoogleTranslate->splitText($text, 40, true);
+		$expected = array(
+			'<h1>Hello</h1>',
+			'<p>Sentence one. And two.</p>',
+			'<p>',
+			'This is a text with ',
+			'<strong>more difficult</strong>',
+			'HTML code.',
+			'</p>',
+			'<br /><p>',
+			'And other things: ',
+			'<a href="http://google.com">Google</a>',
+			'<img src="http://google.com/ing.png" />',
+			' for instance.',
+			'</p>');
+		$this->assertEqual($result, $expected);
+	}
 }

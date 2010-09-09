@@ -172,13 +172,19 @@ class GoogleTranslate extends Object {
  * @TODO Improve me to work with HTML
  * @param string $text Text to split in smaller parts
  * @param int $maxLength Maximum length of a text part
+ * @param boolean $html If true HTML tags will be handled properly 
  * @return array 
  */
-	protected function _splitText($text, $maxLength) {
+	protected function _splitText($text, $maxLength, $html = false) {
 		if (strlen($text) <= $maxLength) {
 			$texts = array($text);
 		} else {
-			$sentences = preg_split("/[\.][\s]+/", $text);
+			if ($html) {
+
+			} else {
+				$sentences = preg_split("/[\.][\s]+/", $text);
+			}
+
 			$texts = array('');
 			$i = 0;
 			foreach($sentences as $sentence) {
