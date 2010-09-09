@@ -184,12 +184,27 @@ class GoogleTranslate extends Object {
 			foreach($sentences as $sentence) {
 				if (empty($sentence)) { continue; }
 				$sentence .= '. ';
-				if (strlen($texts[$i]) + strlen($sentence) < $maxLength) {
+				if (empty($texts[$i]) && strlen($sentence) >= $maxLength) {
+					// Cut the string before the latest word
+					while (strlen($sentence) >= $maxLength) {
+						$sentencePart = substr($sentence, 0, $maxLength);
+						$sentencePart = substr($sentencePart, 0, strrpos($sentencePart, ' ') + 1);
+						
+						$texts[$i++] = $sentencePart;
+						$sentence = substr($sentence, strlen($sentencePart));
+					}
+					$texts[$i++] = $sentence;
+					$texts[$i] = '';
+				} elseif (strlen($texts[$i]) + strlen($sentence) < $maxLength) {
 					$texts[$i] .= $sentence; 
 				} else {
 					$i++;
 					$texts[$i] = $sentence;
 				}
+			}
+			// Removes the ". " of the latest text if it was not finished with a period
+			if (substr(trim($text), -1) !== '.') {
+				$texts[count($texts) - 1] = substr($texts[count($texts) - 1], 0, -2);
 			}
 		}
 		return $texts;

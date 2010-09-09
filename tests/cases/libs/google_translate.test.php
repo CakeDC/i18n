@@ -17,6 +17,16 @@ App::import('Core', 'HttpSocket');
 Mock::generate('HttpSocket');
 
 /**
+ * Spy Google Translate class that allows to access protected methods for our tests
+ *
+ */
+class SpyGoogleTranslate extends GoogleTranslate {
+	public function splitText($text, $maxLength) {
+		return $this->_splitText($text, $maxLength);
+	}
+}
+
+/**
  * Google Translate Library test case
  *
  * @package i18n
@@ -27,7 +37,7 @@ class GoogleTranslateTestCase extends CakeTestCase {
 /**
  * Google translate library instance
  * 
- * @var GoogleTranslate
+ * @var SpyGoogleTranslate
  */
 	public $GoogleTranslate;
 
@@ -51,7 +61,7 @@ class GoogleTranslateTestCase extends CakeTestCase {
  * @return void
  */
 	public function startTest() {
-		$this->GoogleTranslate = new GoogleTranslate();
+		$this->GoogleTranslate = new SpyGoogleTranslate();
 		if ($this->__mockSocket) {
 			$this->GoogleTranslate->key = 'myApiKey';
 			$this->GoogleTranslate->Http = $this->Http = new MockHttpSocket();
@@ -160,4 +170,21 @@ class GoogleTranslateTestCase extends CakeTestCase {
 		$result = $this->GoogleTranslate->translate($text, 'fr', 'en');
 		$this->assertEqual($result, $expectedTranslation);
 	}
+
+/**
+ * Test splitting a text that contains sentences longer than the limit
+ *
+ * @return void
+ */
+	public function testSplitLongSentences() {
+		$text = 'This is a text, without any correct sentence - I hate using a period. Sometimes I don\'t!';
+		$result = $this->GoogleTranslate->splitText($text, 30);
+		$expected = array(
+			'This is a text, without any ',
+			'correct sentence - I hate ',
+			'using a period. ',
+			'Sometimes I don\'t!');
+		$this->assertEqual($result, $expected);
+	}
+
 }
