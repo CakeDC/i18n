@@ -8,6 +8,7 @@
  * @copyright Copyright 2009-2010, Cake Development Corporation (http://cakedc.com)
  * @license MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
+App::import('Core', 'Router');
 
 /**
  * i18n Route
