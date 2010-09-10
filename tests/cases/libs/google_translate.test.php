@@ -24,6 +24,9 @@ class SpyGoogleTranslate extends GoogleTranslate {
 	public function splitText($text, $maxLength, $html = false) {
 		return $this->_splitText($text, $maxLength, $html);
 	}
+	public function isTranslatable($text, $html) {
+		return $this->_isTranslatable($text, $html);
+	}
 }
 
 /**
@@ -243,5 +246,27 @@ class GoogleTranslateTestCase extends CakeTestCase {
 			'<p>This is a paragraph</p>'
 		);
 		$this->assertEqual($result, $expected);
+	}
+
+/**
+ * Test isTranslatable protected method
+ *
+ * @return void
+ */
+	public function testIsTranslatable() {
+		$texts = array(
+			'<h1>Hello</h1>',
+			'<p>Sentence one. And two.</p>',
+			'<p>',
+			'This is a text with HTML code.',
+			'</p>',
+			'<code><?php echo "test"; ?></code>');
+		$results = $resultsNotHtml = array();
+		foreach ($texts as $text) {
+			$resultsNotHtml[] = $this->GoogleTranslate->isTranslatable($text, false);
+			$results[] = $this->GoogleTranslate->isTranslatable($text, true);
+		}
+		$this->assertEqual($resultsNotHtml, array(true, true, true, true, true, true));
+		$this->assertEqual($results, array(true, true, false, true, false, false));
 	}
 }

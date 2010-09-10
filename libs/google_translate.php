@@ -102,9 +102,13 @@ class GoogleTranslate extends Object {
 		
 		$translation = '';
 		foreach($texts as $text) {
-			$query['q'] = $text;
-			$result = $this->_doCall($url, $query);
-			$translation = isset($result['translatedText']) ? $translation . urldecode($result['translatedText']) . ' ' : false;
+			if (!$this->_isTranslatable($text, $isHtml)) {
+				$translation .= $text;
+			} else {
+				$query['q'] = $text;
+				$result = $this->_doCall($url, $query);
+				$translation = isset($result['translatedText']) ? $translation . urldecode($result['translatedText']) . ' ' : false;
+			}
 		}
 		
 		return is_string($translation) ? trim($translation) : $translation;
@@ -215,5 +219,25 @@ class GoogleTranslate extends Object {
 			}
 		}
 		return $texts;
+	}
+
+/**
+ * Determines whether a text is translatable or not
+ * It allows to filter what kind of content must be sent to Google Translate or not
+ * 
+ * @param string $text Text to analyze
+ * @param boolean $html Html mode for the translation
+ * @return boolean True if the text can be sent to Google, false if it is not translatable
+ */
+	protected function _isTranslatable($text, $html) {
+		$translatable = true;
+		if ($html) {
+			if (preg_match('/^<[^<]+?>$/', $text)) {
+				$translatable = false;
+			} elseif (preg_match('/^<code>.*<\/code>$/s', $text)) {
+				$translatable = false;
+			}
+		}
+		return $translatable;
 	}
 }
