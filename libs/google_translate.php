@@ -98,13 +98,17 @@ class GoogleTranslate extends Object {
 		$query = array(
 			'langpair' => $source . '|' . $dest,
 			'format' => $isHtml ? 'html' : 'text');
-		$texts = $this->_splitText($text, $this->__limit); 
+		$texts = $this->_splitText($text, $this->__limit, $isHtml); 
 		
 		$translation = '';
 		foreach($texts as $text) {
-			$query['q'] = $text;
-			$result = $this->_doCall($url, $query);
-			$translation = isset($result['translatedText']) ? $translation . urldecode($result['translatedText']) . ' ' : false;
+			if (!$this->_isTranslatable($text, $isHtml)) {
+				$translation .= $text;
+			} else {
+				$query['q'] = $text;
+				$result = $this->_doCall($url, $query);
+				$translation = isset($result['translatedText']) ? $translation . urldecode($result['translatedText']) . ' ' : false;
+			}
 		}
 		
 		return is_string($translation) ? trim($translation) : $translation;
@@ -172,41 +176,68 @@ class GoogleTranslate extends Object {
  * @TODO Improve me to work with HTML
  * @param string $text Text to split in smaller parts
  * @param int $maxLength Maximum length of a text part
+ * @param boolean $html If true HTML tags will be handled properly 
  * @return array 
  */
-	protected function _splitText($text, $maxLength) {
+	protected function _splitText($text, $maxLength, $html = false) {
 		if (strlen($text) <= $maxLength) {
 			$texts = array($text);
 		} else {
-			$sentences = preg_split("/[\.][\s]+/", $text);
-			$texts = array('');
-			$i = 0;
-			foreach($sentences as $sentence) {
-				if (empty($sentence)) { continue; }
-				$sentence .= '. ';
-				if (empty($texts[$i]) && strlen($sentence) >= $maxLength) {
-					// Cut the string before the latest word
-					while (strlen($sentence) >= $maxLength) {
-						$sentencePart = substr($sentence, 0, $maxLength);
-						$sentencePart = substr($sentencePart, 0, strrpos($sentencePart, ' ') + 1);
-						
-						$texts[$i++] = $sentencePart;
-						$sentence = substr($sentence, strlen($sentencePart));
+			if ($html) {
+				App::import('Lib', 'I18n.HtmlTokenizer');
+				$Tokenizer = new HtmlTokenizer($text);
+				$texts = $Tokenizer->tokens($maxLength);
+			} else {
+				$sentences = preg_split("/[\.][\s]+/", $text);
+				$texts = array('');
+				$i = 0;
+				foreach($sentences as $sentence) {
+					if (empty($sentence)) { continue; }
+					$sentence .= '. ';
+					if (empty($texts[$i]) && strlen($sentence) >= $maxLength) {
+						// Cut the string before the latest word
+						while (strlen($sentence) >= $maxLength) {
+							$sentencePart = substr($sentence, 0, $maxLength);
+							$sentencePart = substr($sentencePart, 0, strrpos($sentencePart, ' ') + 1);
+							
+							$texts[$i++] = $sentencePart;
+							$sentence = substr($sentence, strlen($sentencePart));
+						}
+						$texts[$i++] = $sentence;
+						$texts[$i] = '';
+					} elseif (strlen($texts[$i]) + strlen($sentence) < $maxLength) {
+						$texts[$i] .= $sentence; 
+					} else {
+						$i++;
+						$texts[$i] = $sentence;
 					}
-					$texts[$i++] = $sentence;
-					$texts[$i] = '';
-				} elseif (strlen($texts[$i]) + strlen($sentence) < $maxLength) {
-					$texts[$i] .= $sentence; 
-				} else {
-					$i++;
-					$texts[$i] = $sentence;
 				}
-			}
-			// Removes the ". " of the latest text if it was not finished with a period
-			if (substr(trim($text), -1) !== '.') {
-				$texts[count($texts) - 1] = substr($texts[count($texts) - 1], 0, -2);
+				// Removes the ". " of the latest text if it was not finished with a period
+				if (substr(trim($text), -1) !== '.') {
+					$texts[count($texts) - 1] = substr($texts[count($texts) - 1], 0, -2);
+				}
 			}
 		}
 		return $texts;
+	}
+
+/**
+ * Determines whether a text is translatable or not
+ * It allows to filter what kind of content must be sent to Google Translate or not
+ * 
+ * @param string $text Text to analyze
+ * @param boolean $html Html mode for the translation
+ * @return boolean True if the text can be sent to Google, false if it is not translatable
+ */
+	protected function _isTranslatable($text, $html) {
+		$translatable = true;
+		if ($html) {
+			if (preg_match('/^<[^<]+?>$/', $text)) {
+				$translatable = false;
+			} elseif (preg_match('/^<code>.*<\/code>$/s', $text)) {
+				$translatable = false;
+			}
+		}
+		return $translatable;
 	}
 }
