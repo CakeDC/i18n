@@ -23,7 +23,7 @@ class HtmlTokenizer {
  * 
  * @var DomDocument
  */
-	protected $document = null;
+	protected $_document = null;
 
 /**
  * Constructor
@@ -33,21 +33,23 @@ class HtmlTokenizer {
  */
 	public function __construct($html) {
 		libxml_use_internal_errors(true);
-		$this->document = new DomDocument();
-		$this->document->preserveWhiteSpace = false;
-		$this->document->loadHTML($html);
+		$this->_document = new DomDocument();
+		$this->_document->preserveWhiteSpace = false;
+		$this->_document->loadHTML($html);
 		libxml_use_internal_errors(false);
 	}
 
 /**
- * Returns an array of tanslate-friendly tokens extracted from a HTML document
+ * Returns an array of translate-friendly tokens extracted from a HTML document
+ * The code will be splitten in tokens no longer than the passed lenght, and are valid HTML
+ * No tag will be splitted across two tokens.
  * 
  * @param int $length maximum size for each token extracted from the HTML document
  * @return array list of tokens
  */
 	public function tokens($length = 5000) {
-		$body = $this->document->getElementsByTagName('body')->item(0);
-		$contents = $this->getTokenContents($body);
+		$body = $this->_document->getElementsByTagName('body')->item(0);
+		$contents = $this->_getTokenContents($body);
 
 		if (strlen($contents) <= $length) {
 			return array($contents);
@@ -58,7 +60,7 @@ class HtmlTokenizer {
 
 		foreach ($body->childNodes as $child) {
 			
-			$childContent = $this->getTokenContents($child);
+			$childContent = $this->_getTokenContents($child);
 			$childContentLenght = strlen($childContent);
 
 			if (!trim($childContent)) {
@@ -72,17 +74,16 @@ class HtmlTokenizer {
 
 			if (strlen($biggestToken) + $childContentLenght <= $length) {
 				$biggestToken .= $childContent;
-				continue;
 			} else if ($childContentLenght > $length && $child->hasChildNodes()) {
 				$tokens[] = $biggestToken;
 				$biggestToken = '';
-				$tokens = $this->tokenizeChild($child, $tokens, $length);
+				$tokens = $this->_tokenizeChild($child, $tokens, $length);
 			} else {
 				$tokens[] = $biggestToken;
 				$biggestToken = $childContent;
 			}
 		}
-		return $this->postProcess($tokens); 
+		return $this->_postProcess($tokens); 
 	}
 
 /**
@@ -93,14 +94,14 @@ class HtmlTokenizer {
  * @param int $length maximum size for each token extracted from the HTML document
  * @return array list of tokens
  */
-	protected function tokenizeChild($child, $tokens, $length) {
-		$attributes = $this->getNodeAttributes($child);
+	protected function _tokenizeChild($child, $tokens, $length) {
+		$attributes = $this->_getNodeAttributes($child);
 		if ($attributes) {
 			$attributes = ' ' . $attributes;
 		}
 		$tokens[] = "<{$child->tagName}{$attributes}>";
 		foreach ($child->childNodes as $c) {
-			$cContent = $this->getTokenContents($c);
+			$cContent = $this->_getTokenContents($c);
 			if (!$c->hasChildNodes()) {
 				if (!trim($cContent)) {
 					continue;
@@ -109,7 +110,7 @@ class HtmlTokenizer {
 				continue;
 			}
 			$tokenizer = new HtmlTokenizer($cContent);
-			$newTokens = $tokenizer->tokens($this->getTokenContents($c));
+			$newTokens = $tokenizer->tokens($this->_getTokenContents($c));
 			if (array_sum(array_map('strlen', $newTokens)) <= $length) {
 				$tokens[] = join('', $newTokens);
 			} else {
@@ -126,7 +127,7 @@ class HtmlTokenizer {
  * @param DomNode $node
  * @return string raw text extracted from $node
  */
-	protected function getTokenContents($node) {
+	protected function _getTokenContents($node) {
 		if ($node instanceof DomText) {
 			return $node->textContent;
 		}
@@ -139,7 +140,7 @@ class HtmlTokenizer {
  * @param DomNode $node
  * @return string serialized list of $node attributes
  */
-	protected function getNodeAttributes($node) {
+	protected function _getNodeAttributes($node) {
 		$result = array();
 		foreach ($node->attributes as $attribute) {
 			$result[] = "{$attribute->nodeName}=\"{$attribute->nodeValue}\"";
@@ -153,7 +154,7 @@ class HtmlTokenizer {
  * @param array $tokens list of tokens to process and clean html
  * @return array of processed tokens
  */
-	protected function postProcess($tokens) {
+	protected function _postProcess($tokens) {
 		foreach ($tokens as &$token) {
 			$token = str_replace('<br></br>', '<br />', $token);
 			$token = str_replace('</img>', '', $token);
