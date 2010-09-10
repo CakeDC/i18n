@@ -231,5 +231,17 @@ class GoogleTranslateTestCase extends CakeTestCase {
 			'</p>'
 		);
 		$this->assertEqual($result, $expected);
+	
+		$text = '
+			<code><?php echo "foobar"; ?></code>
+			<code><script language="javascript">alert("Hello world!");</script></code>
+			<p>This is a paragraph</p>';
+		$result = $this->GoogleTranslate->splitText($text, 140, true);
+		$expected = array(
+			'<code><?php echo "foobar"; ?></code>',
+			'<code><script language="javascript">alert("Hello world!");</script></code>',
+			'<p>This is a paragraph</p>'
+		);
+		$this->assertEqual($result, $expected);
 	}
 }

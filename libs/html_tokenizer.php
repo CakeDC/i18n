@@ -63,7 +63,7 @@ class HtmlTokenizer {
 			$childContent = $this->_getTokenContents($child);
 			$childContentLenght = strlen($childContent);
 
-			if (!trim($childContent)) {
+			if (trim($childContent) == '') {
 				continue;
 			}
 
@@ -83,6 +83,11 @@ class HtmlTokenizer {
 				$biggestToken = $childContent;
 			}
 		}
+		
+		if (trim($biggestToken) != '') { 
+			$tokens[] = $biggestToken;
+		}
+		
 		return $this->_postProcess($tokens); 
 	}
 
