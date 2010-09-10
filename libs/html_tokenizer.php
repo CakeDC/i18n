@@ -45,10 +45,13 @@ class HtmlTokenizer {
  * No tag will be splitted across two tokens.
  * 
  * @param int $length maximum size for each token extracted from the HTML document
+ * @param DOMElement $body DomElement to tokenize, by default the current $this->_document in used
  * @return array list of tokens
  */
-	public function tokens($length = 5000) {
-		$body = $this->_document->getElementsByTagName('body')->item(0);
+	public function tokens($length = 5000, $body = null) {
+		if (!($body instanceof DOMElement)) {
+			$body = $this->_document->getElementsByTagName('body')->item(0);
+		}
 		$contents = $this->_getTokenContents($body);
 
 		if (strlen($contents) <= $length) {
@@ -68,18 +71,21 @@ class HtmlTokenizer {
 			}
 
 			if (isset($child->tagName) && $child->tagName == 'code') {
-				$tokens[] = str_replace('??>', '?>', $childContent);
-				continue;
+				$childContent = str_replace('??>', '?>', $childContent);
 			}
 
 			if (strlen($biggestToken) + $childContentLenght <= $length) {
 				$biggestToken .= $childContent;
 			} else if ($childContentLenght > $length && $child->hasChildNodes()) {
-				$tokens[] = $biggestToken;
+				if (trim($biggestToken) != '') {
+					$tokens[] = $biggestToken;
+				}
 				$biggestToken = '';
 				$tokens = $this->_tokenizeChild($child, $tokens, $length);
 			} else {
-				$tokens[] = $biggestToken;
+				if (trim($biggestToken) != '') {
+					$tokens[] = $biggestToken;
+				}
 				$biggestToken = $childContent;
 			}
 		}
@@ -111,11 +117,14 @@ class HtmlTokenizer {
 				if (!trim($cContent)) {
 					continue;
 				}
+				if (isset($child->tagName) && $child->tagName == 'code') {
+					$cContent = str_replace('??>', '?>', $cContent);
+				}
 				$tokens[] = $cContent;
 				continue;
 			}
 			$tokenizer = new HtmlTokenizer($cContent);
-			$newTokens = $tokenizer->tokens($this->_getTokenContents($c));
+			$newTokens = $tokenizer->tokens($length, $c);
 			if (array_sum(array_map('strlen', $newTokens)) <= $length) {
 				$tokens[] = join('', $newTokens);
 			} else {
