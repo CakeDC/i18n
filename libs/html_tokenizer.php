@@ -67,7 +67,7 @@ class HtmlTokenizer {
 				continue;
 			}
 
-			if ($child->tagName == 'code') {
+			if (isset($child->tagName) && $child->tagName == 'code') {
 				$tokens[] = str_replace('??>', '?>', $childContent);
 				continue;
 			}
