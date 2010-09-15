@@ -86,6 +86,25 @@ class I18nRoute extends CakeRoute {
 	}
 
 /**
+ * Checks to see if the given URL can be parsed by this route.
+ * If the route can be parsed an array of parameters will be returned if not
+ * false will be returned. String urls are parsed if they match a routes regular expression.
+ *
+ * @param string $url The url to attempt to parse.
+ * @return mixed Boolean false on failure, otherwise an array or parameters
+ * @access public
+ */
+	public function parse($url) {
+		$params = parent::parse($url);
+
+		if ($params !== false && array_key_exists('lang', $params)) {
+			Configure::write('Config.language', $params['lang']);
+		}
+
+		return $params;
+	}
+
+/**
  * Connects the default, built-in routes, including prefix and plugin routes with the i18n custom Route
  * Code mostly duplicated from Router::__connectDefaultRoutes
  *

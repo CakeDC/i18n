@@ -197,6 +197,7 @@ class I18nRouteTestCase extends CakeTestCase {
 			'named' => array(), 'pass' => array('home'), 'lang' => $this->__defaultLang
 		);
 		$this->assertEqual($result, $expected);
+		$this->assertEqual(Configure::read('Config.language'), $this->__defaultLang);
 		
 		$result = Router::parse('/posts/view/42');
 		$expected = array(
@@ -220,6 +221,7 @@ class I18nRouteTestCase extends CakeTestCase {
 			'named' => array(), 'pass' => array('home'), 'lang' => 'spa'
 		);
 		$this->assertEqual($result, $expected);
+		$this->assertEqual(Configure::read('Config.language'), 'spa');
 		
 		
 		$result = Router::parse('/spa/posts/view/42');
