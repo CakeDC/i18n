@@ -47,10 +47,7 @@ class i18nHelper extends AppHelper {
 			'basePath' => $this->basePath,
 			'class' => 'languages');
 		$options = array_merge($_defaults, $options);
-		$langs = Configure::read('Config.languages');
-		if (defined('DEFAULT_LANGUAGE')) {
-			array_unshift($langs, DEFAULT_LANGUAGE);
-		}
+		$langs = $this->availableLanguages();
 		
 		$out = '';
 		if (!empty($langs)) {
@@ -90,4 +87,23 @@ class i18nHelper extends AppHelper {
 		$options = array_merge($_defaults, $options);
 		return $this->Html->image($options['basePath'] . $L10n->map($lang) . '.png');
 	}
+	
+/**
+ * Returns all the available languages on the website
+ * 
+ * @param boolean $includeCurrent Whether or not the current language must be included in the result
+ * @return array List of available language codes 
+ */	
+	public function availableLanguages($includeCurrent = true) {
+		$languages = Configure::read('Config.languages');
+		if (defined('DEFAULT_LANGUAGE')) {
+			array_unshift($languages, DEFAULT_LANGUAGE);
+		}
+
+		if (!$includeCurrent && in_array(Configure::read('Config.language'), $languages)) {
+			unset($languages[array_search(Configure::read('Config.language'), $languages)]);
+		}
+		return $languages;
+	}
+
 }
