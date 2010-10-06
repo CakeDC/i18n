@@ -108,7 +108,6 @@ class I18nRoute extends CakeRoute {
  * Connects the default, built-in routes, including prefix and plugin routes with the i18n custom Route
  * Code mostly duplicated from Router::__connectDefaultRoutes
  *
- * @TODO Add Short route for plugins
  * @see Router::__connectDefaultRoutes
  * @param array $pluginExceptions Plugins ommited from the lang default routing
  * @return void
@@ -127,13 +126,16 @@ class I18nRoute extends CakeRoute {
 
 				$pluginPattern = implode('|', $plugins);
 				$match = array('plugin' => $pluginPattern) + $options;
+				$shortParams = array('routeClass' => 'PluginShortI18nRoute', 'plugin' => $pluginPattern);
 				
 				foreach ($prefixes as $prefix) {
 					$params = array('prefix' => $prefix, $prefix => true);
 					$indexParams = $params + array('action' => 'index');
+					Router::connect("/{$prefix}/:plugin", $indexParams, $shortParams);
 					Router::connect("/{$prefix}/:plugin/:controller", $indexParams, $match);
 					Router::connect("/{$prefix}/:plugin/:controller/:action/*", $params, $match);
 				}
+				Router::connect('/:plugin', array('action' => 'index'), $shortParams);
 				Router::connect('/:plugin/:controller', array('action' => 'index'), $match);
 				Router::connect('/:plugin/:controller/:action/*', array(), $match);
 			}
@@ -191,4 +193,55 @@ class I18nRoute extends CakeRoute {
 		self::$__defaultsMapped = false;
 		Router::reload();
 	}
+}
+
+/**
+ * Plugin short route, that copies the plugin param to the controller parameters
+ * It is used for supporting /:plugin routes.
+ *
+ * @package i18n
+ * @subpackage i18n.libs
+ * @see PluginShortRoute
+ */
+class PluginShortI18nRoute extends I18nRoute {
+/**
+* Class name - Workaround to be able to extend this class without breaking exixtent features
+* 
+* @var string
+*/
+	public $name = __CLASS__;
+
+/**
+ * Parses a string url into an array.  If a plugin key is found, it will be copied to the 
+ * controller parameter
+ *
+ * @param string $url The url to parse
+ * @return mixed false on failure, or an array of request parameters
+ */
+	public function parse($url) {
+		$params = parent::parse($url);
+		if (!$params) {
+			return false;
+		}
+		$params['controller'] = $params['plugin'];
+		return $params;
+	}
+
+/**
+ * Reverse route plugin shortcut urls.  If the plugin and controller
+ * are not the same the match is an auto fail.
+ *
+ * @param array $url Array of parameters to convert to a string.
+ * @return mixed either false or a string url.
+ */
+	public function match($url) {
+		if (isset($url['controller']) && isset($url['plugin']) && $url['plugin'] != $url['controller']) {
+			return false;
+		}
+		$this->defaults['controller'] = $url['controller'];
+		$result = parent::match($url);
+		unset($this->defaults['controller']);
+		return $result;
+	}
+
 }

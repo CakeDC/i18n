@@ -11,10 +11,6 @@
 
 App::import('Lib', array('I18n.I18nRoute'));
 
-if (!defined('FULL_BASE_URL')) {
-	define('FULL_BASE_URL', 'http://cakephp.org');
-}
-
 /**
  * Test case for i18nroute
  *
@@ -238,7 +234,6 @@ class I18nRouteTestCase extends CakeTestCase {
 		);
 		$this->assertEqual($result, $expected);
 	}
-	
 
 /**
  * Test connecting the default routes with i18n
@@ -257,12 +252,11 @@ class I18nRouteTestCase extends CakeTestCase {
 		Router::reload();
 		I18nRoute::connectDefaultRoutes();
 
-		$plugins = App::objects('plugin');
-		$plugin = Inflector::underscore($plugins[0]);
-		$result = Router::url(array('plugin' => $plugin, 'controller' => 'js_file', 'action' => 'index'));
+
+		$result = Router::url(array('plugin' => 'plugin_js', 'controller' => 'js_file', 'action' => 'index'));
 		$this->assertEqual($result, '/spa/plugin_js/js_file');
 		
-		$result = Router::url(array('plugin' => $plugin, 'controller' => 'js_file', 'action' => 'index', 'admin' => true));
+		$result = Router::url(array('plugin' => 'plugin_js', 'controller' => 'js_file', 'action' => 'index', 'admin' => true));
 		$this->assertEqual($result, '/spa/admin/plugin_js/js_file');
 
 		
@@ -286,7 +280,8 @@ class I18nRouteTestCase extends CakeTestCase {
 		unset($expected['admin'], $expected['prefix']);
 		$this->assertEqual($result, $expected);
 
-		/* TODO Implement short plugin routes
+
+		// Short plugin syntax
 		$result = Router::url(array('plugin' => 'test_plugin', 'controller' => 'test_plugin', 'action' => 'index'));
 		$this->assertEqual($result, '/spa/test_plugin');
 
@@ -295,14 +290,12 @@ class I18nRouteTestCase extends CakeTestCase {
 			'plugin' => 'test_plugin', 'controller' => 'test_plugin', 'action' => 'index',
 			'named' => array(), 'pass' => array(), 'lang' => $this->__defaultLang
 		);
-		$this->assertEqual($result, $expected, 'Plugin shortcut route broken. %s');*/
-		$result = Router::url(array('plugin' => 'test_plugin', 'controller' => 'test_plugin', 'action' => 'index'));
-		$this->assertEqual($result, '/spa/test_plugin/test_plugin');
+		$this->assertEqual($result, $expected, 'Plugin shortcut route broken. %s');
 
-		$result = Router::parse('/test_plugin/test_plugin');
+		$result = Router::parse('/spa/test_plugin');
 		$expected = array(
 			'plugin' => 'test_plugin', 'controller' => 'test_plugin', 'action' => 'index',
-			'named' => array(), 'pass' => array(), 'lang' => $this->__defaultLang
+			'named' => array(), 'pass' => array(), 'lang' => 'spa'
 		);
 		$this->assertEqual($result, $expected, 'Plugin shortcut route broken. %s');
 	}
@@ -333,5 +326,95 @@ class I18nRouteTestCase extends CakeTestCase {
 		$this->assertIdentical($Router->routes[4], $beforePromotionRoutes[5]);
 		$this->assertIdentical($Router->routes[5], $beforePromotionRoutes[4]);
 		$this->assertIdentical($Router->routes[6], $beforePromotionRoutes[6]);
+	}
+
+}
+
+/**
+ * Test case for PluginShortI18nRoute
+ *
+ * @package i18n
+ * @author i18n.test.cases.libs
+ */
+class PluginShortI18nRouteTestCase extends CakeTestCase {
+/**
+ * Default language of the application
+ * 
+ * @var string
+ */
+	private $__defaultLang = 'eng'; 
+	
+/**
+ * startTest method
+ *
+ * @return void
+ */
+	public function startTest() {
+		$this->_routing = Configure::read('Routing');
+		$this->_config = Configure::read('Config');
+		Configure::write('Config.language', 'spa');
+		Configure::write('Config.languages', array('eng', 'fre', 'spa'));
+		Configure::write('Routing', array('admin' => null, 'prefixes' => array()));
+		
+		if (defined('DEFAULT_LANGUAGE')) {
+			$this->__defaultLang = DEFAULT_LANGUAGE;
+		} else {
+			define('DEFAULT_LANGUAGE', $this->__defaultLang);
+		}
+		
+		PluginShortI18nRoute::reload();
+	}
+
+/**
+ * end the test and reset the environment
+ *
+ * @return void
+ * @access public
+ */
+	public function endTest() {
+		Configure::write('Routing', $this->_routing);
+		Configure::write('Config', $this->_config);
+	}
+
+/**
+ * test the parsing of routes.
+ *
+ * @return void
+ */
+	public function testParsing() {
+		Router::defaults(false);
+		Router::connect('/:plugin', array('action' => 'index'), array('routeClass' => 'PluginShortI18nRoute', 'plugin' => 'foo|bar'));
+		// This call is needed to work since the "default language" route is created from the constructor
+		PluginShortI18nRoute::promoteLangRoutes();
+
+		$result = Router::parse('/foo');
+		$this->assertEqual($result['plugin'], 'foo');
+		$this->assertEqual($result['controller'], 'foo');
+		$this->assertEqual($result['action'], 'index');
+		$this->assertEqual($result['lang'], $this->__defaultLang);
+
+		$result = Router::parse('/spa/foo');
+		$this->assertEqual($result['plugin'], 'foo');
+		$this->assertEqual($result['controller'], 'foo');
+		$this->assertEqual($result['action'], 'index');
+		$this->assertEqual($result['lang'], 'spa');
+
+		$result = Router::parse('/wrong');
+		$this->assertTrue(empty($result['plugin']), 'Wrong plugin name matched %s');
+	}
+
+/**
+ * test the reverse routing of the plugin shortcut urls.
+ *
+ * @return void
+ */
+	function testMatch() {
+		$route = new PluginShortI18nRoute('/:plugin', array('action' => 'index'), array('plugin' => 'foo|bar'));
+
+		$result = $route->match(array('plugin' => 'foo', 'controller' => 'posts', 'action' => 'index'));
+		$this->assertFalse($result, 'plugin controller mismatch was converted. %s');
+
+		$result = $route->match(array('plugin' => 'foo', 'controller' => 'foo', 'action' => 'index'));
+		$this->assertEqual($result, '/spa/foo');
 	}
 }
