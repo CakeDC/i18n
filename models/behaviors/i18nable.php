@@ -51,6 +51,9 @@ class I18nableBehavior extends ModelBehavior {
  * @param AppModel $Model
  */
 	public function beforeFind(&$Model, $query) {
+		if (empty($this->settings[$Model->alias])) {
+			return;
+		}
 		$settings = $this->settings[$Model->alias];
 		$language = Configure::read('Config.language');
 		if ($Model->hasField($settings['languageField']) && (!isset($query['ignoreLanguage']))) {
@@ -68,6 +71,9 @@ class I18nableBehavior extends ModelBehavior {
  * @param AppModel $Model
  */
 	public function beforeSave(&$Model) {
+		if (empty($this->settings[$Model->alias])) {
+			return;
+		}
 		$settings = $this->settings[$Model->alias];		
 		$language = Configure::read('Config.language');
 		if ($Model->hasField($settings['languageField'])) {
