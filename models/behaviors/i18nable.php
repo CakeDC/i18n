@@ -77,7 +77,9 @@ class I18nableBehavior extends ModelBehavior {
 		$settings = $this->settings[$Model->alias];		
 		$language = Configure::read('Config.language');
 		if ($Model->hasField($settings['languageField'])) {
-			$Model->set(array($settings['languageField'] => $language));
+			if (empty($Model->data[$Model->alias][$settings['languageField']])) {
+				$Model->set(array($settings['languageField'] => $language));
+			}
 		}
 	}
 }
