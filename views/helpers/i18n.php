@@ -45,7 +45,8 @@ class i18nHelper extends AppHelper {
 	public function flagSwitcher($options = array()) {
 		$_defaults = array(
 			'basePath' => $this->basePath,
-			'class' => 'languages');
+			'class' => 'languages',
+			'id' => '');
 		$options = array_merge($_defaults, $options);
 		$langs = $this->availableLanguages();
 		
