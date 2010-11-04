@@ -39,14 +39,16 @@ class i18nHelper extends AppHelper {
  * @param array $options Options with the following possible keys
  * 	- basePath: Base path for the flag images, with a trailing slash
  * 	- class: Class of the <ul> wrapper
- * 	- id Id of the wrapper
+ * 	- id: Id of the wrapper
+ *  - appendName: boolean, whether the language name must be appended to the flag or not [default: false]
  * @return void
  */
 	public function flagSwitcher($options = array()) {
 		$_defaults = array(
 			'basePath' => $this->basePath,
 			'class' => 'languages',
-			'id' => '');
+			'id' => '',
+			'appendName' => false);
 		$options = array_merge($_defaults, $options);
 		$langs = $this->availableLanguages();
 		
@@ -76,6 +78,7 @@ class i18nHelper extends AppHelper {
  * @param string $lang Long language code
  * @param array $options Options with the following possible keys
  * 	- basePath: Base path for the flag images, with a trailing slash
+ *  - appendName: boolean, whether the language name must be appended to the flag or not [default: false]
  * @return string Image markup
  */
 	public function flagImage($lang, $options = array()) {
@@ -84,9 +87,15 @@ class i18nHelper extends AppHelper {
 			App::import('Core', 'L10n');
 			$L10n = new L10n();
 		}
-		$_defaults = array('basePath' => $this->basePath);
+		$_defaults = array('basePath' => $this->basePath, 'appendName' => false);
 		$options = array_merge($_defaults, $options);
-		return $this->Html->image($options['basePath'] . $L10n->map($lang) . '.png');
+		
+		$result = $this->Html->image($options['basePath'] . $L10n->map($lang) . '.png');
+		if ($options['appendName'] === true) {
+			$langData = $L10n->catalog($lang);
+			$result .= $this->Html->tag('span', $langData['language']);
+		}
+		return $result;
 	}
 	
 /**
