@@ -57,10 +57,12 @@ class I18nableBehavior extends ModelBehavior {
 		$settings = $this->settings[$Model->alias];
 		$language = Configure::read('Config.language');
 		if ($Model->hasField($settings['languageField']) && (!isset($query['ignoreLanguage']))) {
-			if (isset($query['language'])) {
-				$language = $query['language'];
+			if (empty($query['conditions'][$Model->alias. '.' . $settings['languageField']])) {
+				if (isset($query['language'])) {
+					$language = $query['language'];
+				}
+				$query['conditions'][$Model->alias . '.' . $settings['languageField']] = $language;
 			}
-			$query['conditions'][$Model->alias . '.' . $settings['languageField']] = $language;
 		}
 		return $query;
 	}
@@ -77,7 +79,9 @@ class I18nableBehavior extends ModelBehavior {
 		$settings = $this->settings[$Model->alias];		
 		$language = Configure::read('Config.language');
 		if ($Model->hasField($settings['languageField'])) {
-			$Model->set(array($settings['languageField'] => $language));
+			if (empty($Model->data[$Model->alias][$settings['languageField']])) {
+				$Model->set(array($settings['languageField'] => $language));
+			}
 		}
 	}
 }
