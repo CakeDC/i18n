@@ -18,21 +18,21 @@
  * @subpackage i18n.views.helpers
  */
 class i18nHelper extends AppHelper {
-	
+
 /**
  * Helpers
  *
  * @var array $helpers
  */
 	public $helpers = array('Html');
-	
+
 /**
  * Base path for the flags images, with a trailing slash
  * 
  * @var string $basePath
  */
 	public $basePath = '/i18n/img/flags/';
-	
+
 /**
  * Displays a list of flags
  * 
@@ -45,14 +45,36 @@ class i18nHelper extends AppHelper {
 	public function flagSwitcher($options = array()) {
 		$_defaults = array(
 			'basePath' => $this->basePath,
-			'class' => 'languages');
+			'class' => 'languages',
+			'flags' => true,
+			'names' => true,
+			'format' => '%flag% %name%',
+			'linkOptions' => array());
 		$options = array_merge($_defaults, $options);
+
 		$langs = $this->availableLanguages();
-		
+
+		if ($options['names'] == true) {
+			App::import('Core', 'L10n');
+			$L10n = new L10n();
+		}
+
 		$out = '';
 		if (!empty($langs)) {
 			$out .= '<ul class="' . $options['class'] . '"' . ife(empty($options['id']), '', ' id="' . $options['id'] . '"') . '>';
 			foreach($langs as $lang) {
+				$map = array('%flag%' => '', '%name%' => '');
+				$title = '';
+				if ($options['flags'] == true) {
+					$map['%flag%'] = $this->flagImage($lang, $options);
+				}
+				if ($options['names'] == true) {
+					$L10n->get($lang);
+					$map['%name%'] = $L10n->language;
+				}
+
+				$title = str_replace(array_keys($map), array_values($map), $options['format']);
+
 				$class = $lang;
 				if ($lang == Configure::read('Config.language')) {
 					$class .= ' selected';
@@ -60,12 +82,12 @@ class i18nHelper extends AppHelper {
 				$url = array_merge($this->params['named'], $this->params['pass'], compact('lang'));
 				$out .= 
 				'<li class="' . $class . '">' .
-					$this->Html->link($this->flagImage($lang, $options), $url, array('escape' => false)) .
+					$this->Html->link($title, $url, array('escape' => false), $options['linkOptions']) .
 				'</li>';
 			}
 			$out .= '</ul>';
 		}
-		
+
 		return $out;
 	}
 
@@ -87,7 +109,7 @@ class i18nHelper extends AppHelper {
 		$options = array_merge($_defaults, $options);
 		return $this->Html->image($options['basePath'] . $L10n->map($lang) . '.png');
 	}
-	
+
 /**
  * Returns all the available languages on the website
  * 
