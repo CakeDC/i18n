@@ -16,6 +16,7 @@
  * @subpackage i18n.libs
  * @see http://code.google.com/apis/ajaxlanguage/documentation/reference.html#_intro_fonje
  */
+App::import('Lib', 'I18n.Jsonwrapper');
 class GoogleTranslate extends Object {
 
 /**
