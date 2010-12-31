@@ -88,8 +88,7 @@ class i18nHelper extends AppHelper {
 		
 		$result = $this->Html->image($options['basePath'] . $L10n->map($lang) . '.png');
 		if ($options['appendName'] === true) {
-			$langData = $L10n->catalog($lang);
-			$result .= $this->Html->tag('span', $langData['language']);
+			$result .= $this->Html->tag('span', $this->getName($lang));
 		}
 		return $result;
 	}
@@ -113,13 +112,22 @@ class i18nHelper extends AppHelper {
 		if ($realNames) {
 			$langs = $languages;
 			$languages = array();
-			$L10n = $this->_getCatalog();
 			foreach ($langs as $l) {
-				$langData = $L10n->catalog($l);
-				$languages[] = $langData['language'];
+				$languages[] = $this->getName($l);
 			}
 		}
 		return $languages;
+	}
+
+/**
+ * Returns the readable name of a language code
+ *
+ * @param string $code language three letters code
+ * @return string language name
+ */
+	public function getName($code) {
+		$langData = $this->_getCatalog()->catalog($code);
+		return $langData['language'];
 	}
 
 /**
