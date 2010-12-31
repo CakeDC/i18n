@@ -82,11 +82,7 @@ class i18nHelper extends AppHelper {
  * @return string Image markup
  */
 	public function flagImage($lang, $options = array()) {
-		static $L10n = null;
-		if (is_null($L10n)) {
-			App::import('Core', 'L10n');
-			$L10n = new L10n();
-		}
+		$L10n = $this->_getCatalog();
 		$_defaults = array('basePath' => $this->basePath, 'appendName' => false);
 		$options = array_merge($_defaults, $options);
 		
@@ -104,7 +100,7 @@ class i18nHelper extends AppHelper {
  * @param boolean $includeCurrent Whether or not the current language must be included in the result
  * @return array List of available language codes 
  */	
-	public function availableLanguages($includeCurrent = true) {
+	public function availableLanguages($includeCurrent = true, $realNames = false) {
 		$languages = Configure::read('Config.languages');
 		if (defined('DEFAULT_LANGUAGE')) {
 			array_unshift($languages, DEFAULT_LANGUAGE);
@@ -113,7 +109,29 @@ class i18nHelper extends AppHelper {
 		if (!$includeCurrent && in_array(Configure::read('Config.language'), $languages)) {
 			unset($languages[array_search(Configure::read('Config.language'), $languages)]);
 		}
+
+		if ($realNames) {
+			$langs = $languages;
+			$languages = array();
+			$L10n = $this->_getCatalog();
+			foreach ($langs as $l) {
+				$langData = $L10n->catalog($l);
+				$languages[] = $langData['language'];
+			}
+		}
 		return $languages;
 	}
 
+/**
+ * Returns a L10n instance
+ *
+ * @return L10n instance
+ */
+	protected function _getCatalog() {
+		if (empty($this->L10n)) {
+			App::import('Core', 'L10n');
+			$this->L10n = new L10n();
+		}
+		return $this->L10n;
+	}
 }
