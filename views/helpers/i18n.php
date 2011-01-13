@@ -91,10 +91,17 @@ class i18nHelper extends AppHelper {
 		} else {
 			$flag = $lang;
 		}
+
+		if ($flag === false) {
+			$flag = $lang;
+		}
+
 		if (strpos($lang, '-') !== false) {
 			$flag = array_pop(explode('-', $lang));
 		}
+
 		$result = $this->Html->image($options['basePath'] . $flag . '.png');
+
 		if ($options['appendName'] === true) {
 			$result .= $this->Html->tag('span', $this->getName($lang));
 		}
