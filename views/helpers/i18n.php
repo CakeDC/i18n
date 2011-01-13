@@ -85,8 +85,16 @@ class i18nHelper extends AppHelper {
 		$L10n = $this->_getCatalog();
 		$_defaults = array('basePath' => $this->basePath, 'appendName' => false);
 		$options = array_merge($_defaults, $options);
-		
-		$result = $this->Html->image($options['basePath'] . $L10n->map($lang) . '.png');
+
+		if (strlen($lang) == 3) {
+			$flag = $L10n->map($lang);
+		} else {
+			$flag = $lang;
+		}
+		if (strpos($lang, '-') !== false) {
+			$flag = array_pop(explode('-', $lang));
+		}
+		$result = $this->Html->image($options['basePath'] . $flag . '.png');
 		if ($options['appendName'] === true) {
 			$result .= $this->Html->tag('span', $this->getName($lang));
 		}
