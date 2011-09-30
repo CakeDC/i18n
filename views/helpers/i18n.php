@@ -39,18 +39,18 @@ class i18nHelper extends AppHelper {
  * @param array $options Options with the following possible keys
  * 	- basePath: Base path for the flag images, with a trailing slash
  * 	- class: Class of the <ul> wrapper
- * 	- id Id of the wrapper
+ * 	- id: Id of the wrapper
+ *  - appendName: boolean, whether the language name must be appended to the flag or not [default: false]
  * @return void
  */
 	public function flagSwitcher($options = array()) {
 		$_defaults = array(
 			'basePath' => $this->basePath,
-			'class' => 'languages');
+			'class' => 'languages',
+			'id' => '',
+			'appendName' => false);
 		$options = array_merge($_defaults, $options);
-		$langs = Configure::read('Config.languages');
-		if (defined('DEFAULT_LANGUAGE')) {
-			array_unshift($langs, DEFAULT_LANGUAGE);
-		}
+		$langs = $this->availableLanguages();
 		
 		$out = '';
 		if (!empty($langs)) {
@@ -78,16 +78,83 @@ class i18nHelper extends AppHelper {
  * @param string $lang Long language code
  * @param array $options Options with the following possible keys
  * 	- basePath: Base path for the flag images, with a trailing slash
+ *  - appendName: boolean, whether the language name must be appended to the flag or not [default: false]
  * @return string Image markup
  */
 	public function flagImage($lang, $options = array()) {
-		static $L10n = null;
-		if (is_null($L10n)) {
-			App::import('Core', 'L10n');
-			$L10n = new L10n();
-		}
-		$_defaults = array('basePath' => $this->basePath);
+		$L10n = $this->_getCatalog();
+		$_defaults = array('basePath' => $this->basePath, 'appendName' => false);
 		$options = array_merge($_defaults, $options);
-		return $this->Html->image($options['basePath'] . $L10n->map($lang) . '.png');
+
+		if (strlen($lang) == 3) {
+			$flag = $L10n->map($lang);
+		} else {
+			$flag = $lang;
+		}
+
+		if ($flag === false) {
+			$flag = $lang;
+		}
+
+		if (strpos($lang, '-') !== false) {
+			$flag = array_pop(explode('-', $lang));
+		}
+
+		$result = $this->Html->image($options['basePath'] . $flag . '.png');
+
+		if ($options['appendName'] === true) {
+			$result .= $this->Html->tag('span', $this->getName($lang));
+		}
+		return $result;
+	}
+	
+/**
+ * Returns all the available languages on the website
+ * 
+ * @param boolean $includeCurrent Whether or not the current language must be included in the result
+ * @return array List of available language codes 
+ */	
+	public function availableLanguages($includeCurrent = true, $realNames = false) {
+		$languages = Configure::read('Config.languages');
+		if (defined('DEFAULT_LANGUAGE')) {
+			array_unshift($languages, DEFAULT_LANGUAGE);
+		}
+
+		if (!$includeCurrent && in_array(Configure::read('Config.language'), $languages)) {
+			unset($languages[array_search(Configure::read('Config.language'), $languages)]);
+		}
+
+		if ($realNames) {
+			$langs = $languages;
+			$languages = array();
+			foreach ($langs as $l) {
+				$languages[] = $this->getName($l);
+			}
+		}
+		return $languages;
+	}
+
+/**
+ * Returns the readable name of a language code
+ *
+ * @param string $code language three letters code
+ * @return string language name
+ */
+	public function getName($code) {
+		$langData = $this->_getCatalog()->catalog($code);
+		return $langData['language'];
+	}
+
+/**
+ * Returns a L10n instance
+ *
+ * @return L10n instance
+ */
+	protected function _getCatalog() {
+		if (empty($this->L10n)) {
+			App::import('Core', 'L10n');
+			$this->L10n = new L10n();
+		}
+		return $this->L10n;
 	}
 }
