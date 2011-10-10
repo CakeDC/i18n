@@ -171,6 +171,36 @@ class I18nRouteTestCase extends CakeTestCase {
 	}
 
 /**
+ * Testing pagination urls with translation
+ *
+ * @return void
+ * @link https://github.com/CakeDC/i18n/issues/5
+ */
+	public function testPaginationLinks() {
+		Router::connect(':lang/admin/:controller/:action/*', array('action' => 'index', 'admin' => true), array('routeClass' => 'I18nRoute'));
+		$result = Router::parse('/eng/admin/posts/index/page:1/limit:3');
+		$expected = array (
+			'lang' => 'eng',
+			'controller' => 'posts',
+			'action' => 'index',
+			'named' => array (
+				'page' => '1',
+				'limit' => '3',),
+			'pass' => array (),
+			'admin' => true,
+			'plugin' => null);
+
+		$result = Router::url(array(
+			'admin' => true,
+			'controller' => 'posts',
+			'action' => 'index',
+			'lang' => 'eng',
+			'page' => 1,
+			'limit' => 3));
+		$this->assertEqual($result, '/eng/admin/posts/index/page:1/limit:3');
+	}
+
+/**
  * test that created routes are parsed correctly.
  *
  * @return void
