@@ -114,9 +114,6 @@ class TranslationTestCase extends AppTestCase {
 
 		$result = $this->Translation->read(null, 'translation-1');
 
-		// put record specific asserts here for example
-		// $this->assertEqual($result['Translation']['title'], $data['Translation']['title']);
-
 		try {
 			$this->Translation->edit('wrong_id', $data);
 			$this->fail('No exception');
@@ -174,4 +171,3 @@ class TranslationTestCase extends AppTestCase {
 	}
 	
 }
-?>
