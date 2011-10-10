@@ -31,14 +31,19 @@ class TranslationsController extends AppController {
  * @see Search.PrgComponent
  */
 	public $presetVars = array(
-		array('field' => 'locale',  'type' => 'value'),
-		array('field' => 'model',   'type' => 'value'),
-		array('field' => 'field',   'type' => 'value'),
+		array('field' => 'locale', 'type' => 'value'),
+		array('field' => 'model', 'type' => 'value'),
+		array('field' => 'field', 'type' => 'value'),
 		array('field' => 'content', 'type' => 'value'),
-	);		
+	);
 
+/**
+ * Models to use with this controller
+ *
+ * @var array
+ */
 	public $uses = array('I18n.Translation');
-	
+
 /**
  * Admin index for translation.
  * 
@@ -46,13 +51,13 @@ class TranslationsController extends AppController {
  */
 	public function admin_index() {
 		$this->Prg->commonProcess();
-        $this->paginate = array(
+		$this->paginate = array(
 			'search',
-            'conditions' => $this->Translation->parseCriteria($this->passedArgs));
-				
+			'conditions' => $this->Translation->parseCriteria($this->passedArgs));
+
 		$this->set('translations', $this->paginate()); 
 	}
-	
+
 /**
  * Admin view for translation.
  *
@@ -110,9 +115,8 @@ class TranslationsController extends AppController {
 			$this->Session->setFlash($e->getMessage());
 			$this->redirect('/');
 		}
- 
 	}
-	
+
 /**
  * Admin edit for translation.
  *
@@ -120,24 +124,19 @@ class TranslationsController extends AppController {
  * @access public
  */
 	public function admin_edit_multi($model, $foreignKey) {
-	debug($this->data);
 		$locales = Configure::read('Config.locales.available');
 		$this->set(compact('model', 'foreignKey', 'locales'));
 		try {
 			$result = $this->Translation->edit_multi($model, $foreignKey, $this->data);
 			if ($result === true) {
 				$this->Session->setFlash(__('Translation saved', true));
-//				$this->redirect(array('action' => 'view', $this->Translation->data['Translation']['id']));
-				
 			} else {
 				$this->set('translations', $result);
 				$this->data = $result;
 			}
 		} catch (OutOfBoundsException $e) {
 			$this->Session->setFlash($e->getMessage());
-//			$this->redirect('/');
 		}
- 
 	}
 
 /**
@@ -163,4 +162,3 @@ class TranslationsController extends AppController {
 	}
 
 }
-?>

@@ -32,6 +32,7 @@ class TranslationsControllerTestCase extends AppTestCase {
 		parent::startTest($method);
 		$this->Translations = AppMock::getTestController('TranslationsController');
 		$this->Translations->constructClasses();
+		$this->Translations->Prg->initialize($this->Translations);
 		$this->Translations->params = array(
 			'named' => array(),
 			'pass' => array(),
