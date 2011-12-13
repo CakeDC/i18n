@@ -10,9 +10,10 @@
  */
 
 /**
- * i18n base controller
+ * I18n AppController
  *
- * @package i18n
- */  
+ * @package I18n.Controller
+ */
 class I18nAppController extends AppController {
+	
 }

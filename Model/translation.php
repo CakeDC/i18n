@@ -1,5 +1,7 @@
 <?php
-class Translation extends AppModel {
+App::uses('I18nAppModel', 'I18n.Modle');
+
+class Translation extends I18nAppModel {
 
 /**
  * Name
