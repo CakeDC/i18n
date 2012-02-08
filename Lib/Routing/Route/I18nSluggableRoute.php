@@ -58,30 +58,28 @@ class I18nSluggableRoute extends I18nRoute {
 		if (!isset($this->options['models'])) {
 			return false;
 		}
-
-		$index = 0;
-		foreach ($this->options['models'] as $checkNamed => $slugField) {
-			if (is_numeric($checkNamed)) {
-				$checkNamed = $slugField;
-				$slugField = null;
-			}
-			if (!empty($url[$index])) {
-				$url[$checkNamed] = $url[$index];
-				unset($url[$index]);
-			}
-			if (isset($url[$checkNamed])) {
-				$slugSet = $this->_Sluggable->getSlugs($checkNamed, $slugField);
-				if ($slugSet === false) {
-					continue;
+		
+		if (isset($this->options['models'])) {
+			$i = -1;
+			foreach ($this->options['models'] as $checkNamed => $slugField) {
+				$i++;
+				if (is_numeric($checkNamed)) {
+					$checkNamed = $slugField;
+					$slugField = null;
 				}
-				if (isset($slugSet[$url[$checkNamed]])) {
-					$url[$index] = $slugSet[$url[$checkNamed]];
-					unset($url[$checkNamed]);
+				if (isset($url[$i])) {
+					$slugSet = $this->_Sluggable->getSlugs($checkNamed, $slugField);
+					if (empty($slugSet)) {
+						return false;
+					}
+					if (!isset($slugSet[$url[$i]])) {
+						return false;
+					}
+					$url[$checkNamed] = $slugSet[$url[$i]];
+					unset($url[$i]);
 				}
 			}
-			$index++;
 		}
-
 		return parent::match($url);
 	}
 
@@ -96,36 +94,37 @@ class I18nSluggableRoute extends I18nRoute {
  */
 	public function parse($url) {
 		$params = parent::parse($url);
-
 		if (empty($params)) {
 			return false;
 		}
 
-		if (isset($this->options['models']) && isset($params['_args_'])) {
-			$index = -1;
+		if (isset($this->options['models'])) {
+			$i = -1;
+			$passed = array();
 			foreach ($this->options['models'] as $checkNamed => $slugField) {
-				$index++;
+				$i++;
 				if (is_numeric($checkNamed)) {
 					$checkNamed = $slugField;
 					$slugField = null;
 				}
+				$passed[$i] = null;
+				if (!isset($params[$checkNamed])) {
+					return false;
+				}
+				$slug = $params[$checkNamed];
 				$slugSet = $this->_Sluggable->getSlugs($checkNamed, $slugField);
-				if ($slugSet === false) {
-					continue;
+				if (empty($slugSet)) {
+					return false;
 				}
 				$slugSet = array_flip($slugSet);
-				$passed = explode('/', $params['_args_']);
-				foreach ($passed as $key => $pass) {
-					if (isset($slugSet[$pass])) {
-						unset($passed[$key]);
-						$passed[$index] = $slugSet[$pass];
-					}
+				if (!isset($slugSet[$slug])) {
+					return false;
 				}
-				$params['_args_'] = implode('/', $passed);
+				$passed[$i] = $slugSet[$slug];
 			}
+			$params['pass'] = array_merge($passed, isset($params['pass']) ? $params['pass'] : array());
 			return $params;
 		}
-
 		return false;
 	}
 
@@ -137,8 +136,8 @@ class I18nSluggableRoute extends I18nRoute {
  * @return boolean True if the value was succesfully deleted, false if it didn't exist or couldn't be removed
  * @access public
  */
-	public function invalidateCache($modelName, $id = null) {
-		return $this->_Sluggable->invalidateCache($modelName, $id);
+	public static function invalidateCache($modelName, $id = null) {
+		return SluggableRoute::invalidateCache($modelName, $id);
 	}
 
 }
