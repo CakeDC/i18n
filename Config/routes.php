@@ -10,7 +10,7 @@
 		Router::connect("/{$prefix}/:controller/:action/*", $params, $options);
 	}
 	Router::connect('/:controller', array('action' => 'index'), $options);
-	Router::connect('/:controller/:action/*', $options);
+	Router::connect('/:controller/:action/*', array(), $options);
 
 	$namedConfig = Router::namedConfig();
 	if ($namedConfig['rules'] === false) {
