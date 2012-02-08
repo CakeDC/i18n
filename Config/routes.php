@@ -9,6 +9,10 @@
 		Router::connect("/{$prefix}/:controller", $indexParams, $options);
 		Router::connect("/{$prefix}/:controller/:action/*", $params, $options);
 	}
+
+	Router::connect('/:controller', array('action' => 'index', 'lang' => DEFAULT_LANGUAGE), $options);
+	Router::connect('/:controller/:action/*', array('lang' => DEFAULT_LANGUAGE), $options);
+
 	Router::connect('/:controller', array('action' => 'index'), $options);
 	Router::connect('/:controller/:action/*', array(), $options);
 

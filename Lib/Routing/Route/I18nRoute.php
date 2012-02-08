@@ -45,6 +45,11 @@ class I18nRoute extends CakeRoute {
 		if (strpos($template, ':lang') === false && empty($options['disableAutoNamedLang'])) {
 			$template = '/:lang' . $template;
 		}
+		$options = array_merge((array)$options, array(
+			'lang' => join('|', Configure::read('Config.languages')),
+		));
+		unset($options['disableAutoNamedLang']);
+		
 		if ($template == '/:lang/') {
 			$template = '/:lang';
 		}
