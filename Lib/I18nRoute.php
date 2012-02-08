@@ -8,7 +8,7 @@
  * @copyright Copyright 2009-2010, Cake Development Corporation (http://cakedc.com)
  * @license MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
-App::import('Core', 'Router');
+App::uses('CakeRoute', 'RoutingRoute');
 
 /**
  * i18n Route
@@ -56,11 +56,6 @@ class I18nRoute extends CakeRoute {
 			$options = array_merge((array)$options, array(
 				'lang' => join('|', Configure::read('Config.languages')),
 			));
-
-			$Router = Router::getInstance();
-			$routesList = Configure::read('I18nRoute.routes');
-			$routesList[] = count($Router->routes);
-			Configure::write('I18nRoute.routes', $routesList);
 		}
 		unset($options['disableAutoNamedLang'], $options['disableDefaultConnect']);
 		
@@ -102,96 +97,6 @@ class I18nRoute extends CakeRoute {
 		}
 
 		return $params;
-	}
-
-/**
- * Connects the default, built-in routes, including prefix and plugin routes with the i18n custom Route
- * Code mostly duplicated from Router::__connectDefaultRoutes
- *
- * @see Router::__connectDefaultRoutes
- * @param array $pluginExceptions Plugins ommited from the lang default routing
- * @return void
- */
-	public static function connectDefaultRoutes($pluginExceptions = array()) {
-		if (!self::$__defaultsMapped) {
-			Router::defaults(false);
-			$options = array('routeClass' => __CLASS__);
-			$prefixes = Router::prefixes();
-			
-			if ($plugins = App::objects('plugin')) {
-				foreach ($plugins as $key => $value) {
-					$plugins[$key] = Inflector::underscore($value);
-				}
-				$plugins = array_diff($plugins, $pluginExceptions);
-
-				$pluginPattern = implode('|', $plugins);
-				$match = array('plugin' => $pluginPattern) + $options;
-				$shortParams = array('routeClass' => 'PluginShortI18nRoute', 'plugin' => $pluginPattern);
-				
-				foreach ($prefixes as $prefix) {
-					$params = array('prefix' => $prefix, $prefix => true);
-					$indexParams = $params + array('action' => 'index');
-					Router::connect("/{$prefix}/:plugin", $indexParams, $shortParams);
-					Router::connect("/{$prefix}/:plugin/:controller", $indexParams, $match);
-					Router::connect("/{$prefix}/:plugin/:controller/:action/*", $params, $match);
-				}
-				Router::connect('/:plugin', array('action' => 'index'), $shortParams);
-				Router::connect('/:plugin/:controller', array('action' => 'index'), $match);
-				Router::connect('/:plugin/:controller/:action/*', array(), $match);
-			}
-	
-			foreach ($prefixes as $prefix) {
-				$params = array('prefix' => $prefix, $prefix => true);
-				$indexParams = $params + array('action' => 'index');
-				Router::connect("/{$prefix}/:controller/:action/*", $params, $options);
-				Router::connect("/{$prefix}/:controller", $indexParams, $options);
-			}
-			Router::connect('/:controller', array('action' => 'index'), $options);
-			Router::connect('/:controller/:action/*', array(), $options);
-
-			$Router = Router::getInstance();
-			if ($Router->named['rules'] === false) {
-				$Router->connectNamed(true);
-			}
-
-			self::$__defaultsMapped = true;
-		}
-	}
-
-/**
- * Promote all the lang routes before their automatically created route for the default language
- *
- * @return void
- */
-	public static function promoteLangRoutes() {
-		$routesList = Configure::read('I18nRoute.routes');
-		if (!empty($routesList)) {
-			$Router = Router::getInstance();
-			$lastIndex = count($Router->routes) - 1;
-			rsort($routesList);
-			foreach($routesList as $langRouteIndex) {
-				while ($langRouteIndex < $lastIndex) {
-					Router::promote();
-					$lastIndex--;
-				}
-				Router::promote(count($Router->routes) - 2);
-				Router::promote();
-				$lastIndex = $langRouteIndex - 2;
-			}
-			Configure::write('I18nRoute.routes', array());
-		}
-	}
-
-/**
- * Reset all the internal static variables.
- * Convenience method for using in tests
- *
- * @return void
- */
-	public static function reload() {
-		Configure::write('I18nRoute.routes', array());
-		self::$__defaultsMapped = false;
-		Router::reload();
 	}
 }
 
