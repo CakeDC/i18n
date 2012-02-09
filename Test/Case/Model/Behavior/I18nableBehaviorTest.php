@@ -8,7 +8,7 @@
  * @copyright Copyright 2009-2010, Cake Development Corporation (http://cakedc.com)
  * @license MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
-App::import('Core', 'Model');
+App::uses('Model', 'Model');
 
 /**
  * i18n behavior tests
@@ -32,7 +32,7 @@ class I18nableTestCase extends CakeTestCase {
  * @return void
  * @access public
  */
-	public function startTest() {
+	public function setUp() {
 		$this->Article = ClassRegistry::init('I18n.Article');
 		$this->Article->Behaviors->attach('I18n.I18nable');
 	}
@@ -43,7 +43,7 @@ class I18nableTestCase extends CakeTestCase {
  * @return void
  * @access public
  */
-	public function endTest() {
+	public function tearDown() {
 		unset($this->Article);
 	}
 

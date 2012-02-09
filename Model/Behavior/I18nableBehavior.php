@@ -38,11 +38,11 @@ class I18nableBehavior extends ModelBehavior {
  * @param AppModel $Model
  * @param array $settings
  */
-	public function setup(&$Model, $settings = array()) {
+	public function setup($Model, $settings = array()) {
 		if (!isset($this->settings[$Model->alias])) {
 			$this->settings[$Model->alias] = $this->defaults;
 		}
-		$this->settings[$Model->alias] = array_merge($this->settings[$Model->alias], ife(is_array($settings), $settings, array()));
+		$this->settings[$Model->alias] = array_merge($this->settings[$Model->alias], is_array($settings) ? $settings : array());
 	}
 
 /**
@@ -50,7 +50,7 @@ class I18nableBehavior extends ModelBehavior {
  *
  * @param AppModel $Model
  */
-	public function beforeFind(&$Model, $query) {
+	public function beforeFind($Model, $query) {
 		if (empty($this->settings[$Model->alias])) {
 			return;
 		}
@@ -72,7 +72,7 @@ class I18nableBehavior extends ModelBehavior {
  *
  * @param AppModel $Model
  */
-	public function beforeSave(&$Model) {
+	public function beforeSave($Model) {
 		if (empty($this->settings[$Model->alias])) {
 			return;
 		}

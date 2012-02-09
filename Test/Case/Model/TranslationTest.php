@@ -1,25 +1,9 @@
 <?php
-/* Translation Test cases generated on: 2011-09-28 12:09:49 : 1317214069*/
-App::import('Model', 'Translation');
+App::uses('Translation', 'I18n.Model');
 
-App::import('Lib', 'Templates.AppTestCase');
-class TranslationTestCase extends AppTestCase {
-/**
- * Autoload entrypoint for fixtures dependecy solver
- *
- * @var string
- * @access public
- */
-	public $plugin = 'i18n';
+class TranslationTestCase extends CakeTestCase {
 
-/**
- * Test to run for the test case (e.g array('testFind', 'testView'))
- * If this attribute is not empty only the tests from the list will be executed
- *
- * @var array
- * @access protected
- */
-	protected $_testsToRun = array();
+	public $fixtures = array('plugin.i18n.translation');
 
 /**
  * Start Test callback
@@ -28,9 +12,9 @@ class TranslationTestCase extends AppTestCase {
  * @return void
  * @access public
  */
-	public function startTest($method) {
-		parent::startTest($method);
-		$this->Translation = AppMock::getTestModel('I18n.Translation');
+	public function setUp() {
+		parent::setUp();
+		$this->Translation = ClassRegistry::init('I18n.Translation');
 		$fixture = new I18nFixture();
 		$this->record = array('Translation' => $fixture->records[0]);
 	}
@@ -42,25 +26,10 @@ class TranslationTestCase extends AppTestCase {
  * @return void
  * @access public
  */
-	public function endTest($method) {
-		parent::endTest($method);
+	public function tearDown() {
+		parent::tearDown();
 		unset($this->Translation);
 		ClassRegistry::flush();
-	}
-
-/**
- * Test validation rules
- *
- * @return void
- * @access public
- */
-	public function testValidation() {
-		$this->assertValid($this->Translation, $this->record);
-
-		// Test mandatory fields
-		$data = array('Translation' => array('id' => 'new-id'));
-		$expectedErrors = array('locale', 'model', 'foreign_key', 'field'); // TODO Update me with mandatory fields
-		$this->assertValidationErrors($this->Translation, $data, $expectedErrors);
 	}
 
 /**

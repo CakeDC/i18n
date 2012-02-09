@@ -1,5 +1,5 @@
 <?php
-App::uses('I18nAppModel', 'I18n.Modle');
+App::uses('I18nAppModel', 'I18n.Model');
 
 class Translation extends I18nAppModel {
 
@@ -39,6 +39,17 @@ class Translation extends I18nAppModel {
 		array('name' => 'field', 'type' => 'like'),
 		array('name' => 'content', 'type' => 'like')
 	);
+
+	public $validate = array(
+		'locale' => array(
+			'notempty' => array('rule' => array('notempty'), 'required' => true, 'allowEmpty' => false, 'message' => 'Please enter a Locale')),
+		'model' => array(
+			'notempty' => array('rule' => array('notempty'), 'required' => true, 'allowEmpty' => false, 'message' => 'Please enter a Model')),
+		'foreign_key' => array(
+			'notempty' => array('rule' => array('notempty'), 'required' => true, 'allowEmpty' => false, 'message' => 'Please enter a Foreign Key')),
+		'field' => array(
+			'notempty' => array('rule' => array('notempty'), 'required' => true, 'allowEmpty' => false, 'message' => 'Please enter a Field')),
+	);
 		
 /**
  * Behaviors
@@ -53,29 +64,7 @@ class Translation extends I18nAppModel {
  *
  * @var array
  */
-	public $_findMethods = array('search' => true);
-
-/**
- * Constructor
- *
- * @param mixed $id Model ID
- * @param string $table Table name
- * @param string $ds Datasource
- * @access public
- */
-	public function __construct($id = false, $table = null, $ds = null) {
-		parent::__construct($id, $table, $ds);
-		$this->validate = array(
-			'locale' => array(
-				'notempty' => array('rule' => array('notempty'), 'required' => true, 'allowEmpty' => false, 'message' => __('Please enter a Locale', true))),
-			'model' => array(
-				'notempty' => array('rule' => array('notempty'), 'required' => true, 'allowEmpty' => false, 'message' => __('Please enter a Model', true))),
-			'foreign_key' => array(
-				'notempty' => array('rule' => array('notempty'), 'required' => true, 'allowEmpty' => false, 'message' => __('Please enter a Foreign Key', true))),
-			'field' => array(
-				'notempty' => array('rule' => array('notempty'), 'required' => true, 'allowEmpty' => false, 'message' => __('Please enter a Field', true))),
-		);
-	}
+	public $findMethods = array('search' => true);
 
 /**
  * Adds a new record to the database
@@ -247,9 +236,8 @@ class Translation extends I18nAppModel {
  * @param array $query
  * @param array $results
  * @return array
- * @access public
  */
-	public function _findSearch($state, $query, $results = array()) {
+	protected function _findSearch($state, $query, $results = array()) {
 		if ($state == 'before') {
 			//$query = Set::merge($defaults, $query);
 			if (!empty($query['operation']) && $query['operation'] === 'count') {
