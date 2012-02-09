@@ -1,6 +1,6 @@
 # Internationalization plugin for CakePHP #
 
-Version 1.1
+Version 2.0
 
 This plugin provides the required classes and method to be able to internationalize your application more easily. Basically it offers a very simple way of switching your application default language based on the url, It also provides classes to auto translate content using the Google translate API.
 
@@ -18,17 +18,23 @@ To achieve this purpose you need to use the I18nRoute class that is provided in 
 
 	define('DEFAULT_LANGUAGE', 'eng'); // The 3 letters code for your default language
 	Configure::write('Config.languages', array('deu', 'fre', 'jpn', 'spa', 'rus')); //List of languages you want to support
-	
+	CakePlugin::load('I18n', array('routes' => true));
 
-Now let's start using the new Route class to support the new internationalized urls. Open your app/config/routes.php and make it look like this:
+Now let's start using the new Route class to support the new internationalized urls. Open your app/Config/routes.php and make it look like this:
 
-	App::import('Lib', 'I18n.I18nRoute');
+	App::uses('I18nRoute', 'I18n.Routing/Route');
 	Router::connect('/', array('controller' => 'pages', 'action' => 'display', 'home'), array('routeClass' => 'I18nRoute'));
 	Router::connect('/pages/*', array('controller' => 'pages', 'action' => 'display'), array('routeClass' => 'I18nRoute'));
 
-	//These 2 lines need to go at the bottom in order to make the plugin work properly
-	I18nRoute::connectDefaultRoutes(array('excluded_plugin', 'another_plugin_excluded')); // Connects routes and excludes some plugin routes if you need to
-	I18nRoute::promoteLangRoutes(); // This reorganizes the route definitions internally so the default language takes priority
+
+Make sure your app/Config/routes.php file contains this line:
+
+	CakePlugin::routes();
+
+Remove the last line of your app/Config/routes.php file, the one that looks like:
+
+	require CAKE . 'Config' . DS . 'routes.php';
+ 
 
 Basically every route your define in your file needs to use the I18nRoute class, so if you have custom routes defined in your routes.php your also need to change them if you want the to be I18n capable:
 
