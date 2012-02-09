@@ -9,7 +9,9 @@
  * @license MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 
-App::import('Lib', array('I18n.I18nRoute', 'Slugger.SluggableRoute'));
+App::uses('I18nRoute', 'I18n.Routing/Route');
+App::uses('SluggableRoute', 'Slugger.Routing/Route');
+
 /**
  * I18nSluggable Route
  *
@@ -42,8 +44,8 @@ class I18nSluggableRoute extends I18nRoute {
  * @return void
  */
 	public function __construct($template, $defaults = array(), $options = array()) {
-		$this->_Sluggable = new SluggableRoute($template, $defaults, $options);
 		parent::__construct($template, $defaults, $options);
+		$this->_Sluggable = new SluggableRoute($this->template, $defaults, $options);
 	}
 
 /**
@@ -55,32 +57,10 @@ class I18nSluggableRoute extends I18nRoute {
  * @return mixed Either a string url for the parameters if they match or false.
  */
 	public function match($url) {
-		if (!isset($this->options['models'])) {
-			return false;
+		if (empty($url['lang'])) {
+			$url['lang'] = Configure::read('Config.language');
 		}
-		
-		if (isset($this->options['models'])) {
-			$i = -1;
-			foreach ($this->options['models'] as $checkNamed => $slugField) {
-				$i++;
-				if (is_numeric($checkNamed)) {
-					$checkNamed = $slugField;
-					$slugField = null;
-				}
-				if (isset($url[$i])) {
-					$slugSet = $this->_Sluggable->getSlugs($checkNamed, $slugField);
-					if (empty($slugSet)) {
-						return false;
-					}
-					if (!isset($slugSet[$url[$i]])) {
-						return false;
-					}
-					$url[$checkNamed] = $slugSet[$url[$i]];
-					unset($url[$i]);
-				}
-			}
-		}
-		return parent::match($url);
+		return $this->_Sluggable->match($url);
 	}
 
 /**
@@ -93,39 +73,11 @@ class I18nSluggableRoute extends I18nRoute {
  * @access public
  */
 	public function parse($url) {
-		$params = parent::parse($url);
-		if (empty($params)) {
-			return false;
+		$params = $this->_Sluggable->parse($url);
+		if ($params !== false && array_key_exists('lang', $params)) {
+			Configure::write('Config.language', $params['lang']);
 		}
-
-		if (isset($this->options['models'])) {
-			$i = -1;
-			$passed = array();
-			foreach ($this->options['models'] as $checkNamed => $slugField) {
-				$i++;
-				if (is_numeric($checkNamed)) {
-					$checkNamed = $slugField;
-					$slugField = null;
-				}
-				$passed[$i] = null;
-				if (!isset($params[$checkNamed])) {
-					return false;
-				}
-				$slug = $params[$checkNamed];
-				$slugSet = $this->_Sluggable->getSlugs($checkNamed, $slugField);
-				if (empty($slugSet)) {
-					return false;
-				}
-				$slugSet = array_flip($slugSet);
-				if (!isset($slugSet[$slug])) {
-					return false;
-				}
-				$passed[$i] = $slugSet[$slug];
-			}
-			$params['pass'] = array_merge($passed, isset($params['pass']) ? $params['pass'] : array());
-			return $params;
-		}
-		return false;
+		return $params;
 	}
 
 /**
