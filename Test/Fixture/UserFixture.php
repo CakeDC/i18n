@@ -89,19 +89,4 @@ class UserFixture extends CakeTestFixture {
 		),
 	);
 
-/**
- * Constructor
- * Hash the user password with the application hash
- * 
- * @return void
- * @access public
- */
-	public function __construct() {
-		parent::__construct();
-		App::import('Core', 'Security');
-		foreach ($this->records as &$record) {
-			$record['passwd'] = Security::hash($record['passwd'], null, true);
-		}
-	}
-
 }

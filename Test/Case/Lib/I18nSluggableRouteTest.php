@@ -9,8 +9,13 @@
  * @license MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 
-App::import('Lib', 'I18n.I18nRoute');
-App::import('Lib', 'I18n.I18nSluggableRoute');
+
+App::uses('Model', 'Model');
+App::uses('Router', 'Routing');
+App::uses('CakeRoute', 'Routing/Route');
+App::uses('I18nRoute', 'I18n.Routing/Route');
+App::uses('I18nSluggableRoute', 'I18n.Routing/Route');
+
 
 class I18nUser extends Model {
 	public $name = 'User';
@@ -55,9 +60,7 @@ class I18nSluggableRouteTestCase extends CakeTestCase {
  * @access public
  * @return void
  */
-	public function startTest() {
-		//Router::connect('/users', array('plugin' => null, 'controller' => 'users', 'action' => 'index'), array('routeClass' => 'I18nRoute'));
-
+	public function setUp() {
 		$this->_routing = Configure::read('Routing');
 		$this->_config = Configure::read('Config');
 		Configure::write('Config.language', 'spa');
@@ -69,19 +72,7 @@ class I18nSluggableRouteTestCase extends CakeTestCase {
 		} else {
 			define('DEFAULT_LANGUAGE', $this->__defaultLang);
 		}
-		
-		I18nRoute::reload();
-	}
-
-/**
- * end the test and reset the environment
- *
- * @return void
- * @access public
- */
-	public function endTest() {
-		Configure::write('Routing', $this->_routing);
-		Configure::write('Config', $this->_config);
+		Router::reload();
 	}
 
 /**
@@ -91,7 +82,7 @@ class I18nSluggableRouteTestCase extends CakeTestCase {
  */
 	public function testMatchBasic() {
 		$route = new I18nSluggableRoute(
-			'/users/view/*',
+			'/users/view/:I18nUser',
 			array('plugin' => null, 'controller' => 'users', 'action' => 'view'),
 			array('models' => array('I18nUser'))
 		);
@@ -113,7 +104,7 @@ class I18nSluggableRouteTestCase extends CakeTestCase {
  */
 	public function testParsing() {
 		$route = Router::connect(
-			'/users/view/*',
+			'/users/view/:I18nUser',
 			array('plugin' => null, 'controller' => 'users', 'action' => 'view'),
 			array('routeClass' => 'I18nSluggableRoute', 'models' => array('I18nUser'))
 		);
@@ -123,6 +114,7 @@ class I18nSluggableRouteTestCase extends CakeTestCase {
 			'plugin' => null, 'controller' => 'users', 'action' => 'view',
 			'pass' => array('user-1'),
 			'named' => array(),
+			'I18nUser' => 'phpnut',
 			'lang' => $this->__defaultLang
 		);
 
@@ -132,7 +124,8 @@ class I18nSluggableRouteTestCase extends CakeTestCase {
 		$result = Router::parse('/fre/users/view/phpnut');
 		$expected = array(
 			'plugin' => null, 'controller' => 'users', 'action' => 'view',
-			'pass' => array('user-1'), 'lang' => 'fre', 'named' => array()
+			'pass' => array('user-1'), 'lang' => 'fre', 'named' => array(),
+			'I18nUser' => 'phpnut'
 		);
 		$this->assertEqual($result, $expected);
 
@@ -142,7 +135,7 @@ class I18nSluggableRouteTestCase extends CakeTestCase {
 			'named' => array(), 'pass' => array('invalid-user'),
 			'lang' => $this->__defaultLang
 		);
-		$this->assertEqual($result, $expected);
+		$this->assertEmpty($result);
 	}
 
 }

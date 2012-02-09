@@ -8,7 +8,8 @@
  * @copyright Copyright 2009-2010, Cake Development Corporation (http://cakedc.com)
  * @license MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
-App::uses('CakeRoute', 'RoutingRoute');
+
+App::uses('CakeRoute', 'Routing/Route');
 
 /**
  * i18n Route
@@ -48,6 +49,7 @@ class I18nRoute extends CakeRoute {
 				$defaults + array('lang' => DEFAULT_LANGUAGE),
 				array('disableAutoNamedLang' => true, 'routeClass' => $this->name) + $options
 			);
+			$options += array('__promote' => true);
 			$template = '/:lang' . $template;
 		}
 		
@@ -91,7 +93,6 @@ class I18nRoute extends CakeRoute {
 		if ($params !== false && array_key_exists('lang', $params)) {
 			Configure::write('Config.language', $params['lang']);
 		}
-
 		return $params;
 	}
 }
