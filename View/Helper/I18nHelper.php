@@ -54,7 +54,8 @@ class i18nHelper extends AppHelper {
 		
 		$out = '';
 		if (!empty($langs)) {
-			$out .= '<ul class="' . $options['class'] . '"' . ife(empty($options['id']), '', ' id="' . $options['id'] . '"') . '>';
+			$id = empty($options['id']) ? ''  : ' id="' . $options['id'] . '"';
+			$out .= '<ul class="' . $options['class'] . '"' . $id . '>';
 			foreach($langs as $lang) {
 				$class = $lang;
 				if ($lang == Configure::read('Config.language')) {
