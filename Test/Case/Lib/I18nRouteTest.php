@@ -288,4 +288,33 @@ class I18nRouteTestCase extends CakeTestCase {
 		$this->assertEquals($result, $expected);
 	}
 
+/**
+ * Test reverse routing with i18n
+ *
+ * @return false
+ * @access public
+ */
+	public function testReverseRouting() {
+		Router::reload();
+		Router::connect('/', array('controller' => 'pages', 'action' => 'display', 'home'));
+		Router::connect('/pages/*', array('controller' => 'pages', 'action' => 'display'));
+		$result = Router::url(array('controller' => 'pages', 'action' => 'display', 'home'));
+		$expected = '/';
+		$this->assertEquals($result, $expected);
+		$result = Router::parse('/');
+		$expected = array('named' => array(), 'pass' => array('home'), 'controller' => 'pages', 'action' => 'display', 'plugin' => null);
+		$this->assertEquals($result, $expected);
+		
+		Configure::write('Config.language', 'eng');
+		Configure::write('Config.languages', array('spa'));
+		Router::reload();
+		Router::connect('/', array('controller' => 'pages', 'action' => 'display', 'home'), array('routeClass' => 'I18nRoute'));
+		Router::connect('/pages/*', array('controller' => 'pages', 'action' => 'display'), array('routeClass' => 'I18nRoute'));
+		$result = Router::url(array('controller' => 'pages', 'action' => 'display', 'home'));
+		$expected = '/';
+		$this->assertEquals($result, $expected);
+		$result = Router::parse($result);
+		$expected = array('named' => array(), 'pass' => array('home'), 'controller' => 'pages', 'action' => 'display', 'plugin' => null);
+		$this->assertEquals($result, $expected);
+	}
 }
