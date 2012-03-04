@@ -70,7 +70,7 @@ foreach ($translations as $translation):
 	</tr>
 <?php endforeach; ?>
 </table>
-<?php echo $this->element('paging', array('plugin' => 'templates')); ?>
+<?php echo $this->element('Templates.paging');?>
 </div>
 
 <div class="actions">
