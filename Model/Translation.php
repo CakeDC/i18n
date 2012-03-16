@@ -25,7 +25,16 @@ class Translation extends I18nAppModel {
  * @var array
  * @access public
  */
-	public $validate = array();
+	public $validate = array(
+		'locale' => array(
+			'notempty' => array('rule' => array('notempty'), 'required' => true, 'allowEmpty' => false, 'message' => 'Please enter a Locale')),
+		'model' => array(
+			'notempty' => array('rule' => array('notempty'), 'required' => true, 'allowEmpty' => false, 'message' => 'Please enter a Model')),
+		'foreign_key' => array(
+			'notempty' => array('rule' => array('notempty'), 'required' => true, 'allowEmpty' => false, 'message' => 'Please enter a Foreign Key')),
+		'field' => array(
+			'notempty' => array('rule' => array('notempty'), 'required' => true, 'allowEmpty' => false, 'message' => 'Please enter a Field')),
+	);
 
 /**
  * Filter args attribute to be used by the Searchable behavior
@@ -40,17 +49,6 @@ class Translation extends I18nAppModel {
 		array('name' => 'content', 'type' => 'like')
 	);
 
-	public $validate = array(
-		'locale' => array(
-			'notempty' => array('rule' => array('notempty'), 'required' => true, 'allowEmpty' => false, 'message' => 'Please enter a Locale')),
-		'model' => array(
-			'notempty' => array('rule' => array('notempty'), 'required' => true, 'allowEmpty' => false, 'message' => 'Please enter a Model')),
-		'foreign_key' => array(
-			'notempty' => array('rule' => array('notempty'), 'required' => true, 'allowEmpty' => false, 'message' => 'Please enter a Foreign Key')),
-		'field' => array(
-			'notempty' => array('rule' => array('notempty'), 'required' => true, 'allowEmpty' => false, 'message' => 'Please enter a Field')),
-	);
-		
 /**
  * Behaviors
  *
