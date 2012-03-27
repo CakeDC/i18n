@@ -117,7 +117,7 @@ class i18nHelper extends AppHelper {
  */	
 	public function availableLanguages($includeCurrent = true, $realNames = false) {
 		$languages = Configure::read('Config.languages');
-		if (defined('DEFAULT_LANGUAGE')) {
+		if (defined('DEFAULT_LANGUAGE') && false === array_search(DEFAULT_LANGUAGE, $languages)) {
 			array_unshift($languages, DEFAULT_LANGUAGE);
 		}
 
