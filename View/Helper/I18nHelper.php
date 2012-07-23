@@ -17,7 +17,7 @@
  * @package i18n
  * @subpackage i18n.views.helpers
  */
-class i18nHelper extends AppHelper {
+class I18nHelper extends AppHelper {
 	
 /**
  * Helpers
