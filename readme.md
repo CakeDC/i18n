@@ -17,7 +17,7 @@ And in addition you would like to show the interface in another language, in ano
 To achieve this purpose you need to use the I18nRoute class that is provided in this plugin. First, download this repo or clone in your app/plugins folder  with the name i18n. Secondly open your app/config/bootstrap.php and add the following content:
 
 	define('DEFAULT_LANGUAGE', 'eng'); // The 3 letters code for your default language
-	Configure::write('Config.languages', array('deu', 'fre', 'jpn', 'spa', 'rus')); //List of languages you want to support
+	Configure::write('Config.languages', array('eng', 'deu', 'fre', 'jpn', 'spa', 'rus')); //List of languages you want to support
 	CakePlugin::load('I18n', array('routes' => true));
 
 Now let's start using the new Route class to support the new internationalized urls. Open your app/Config/routes.php and make it look like this:
@@ -45,7 +45,7 @@ Finally you need to tell CakePHP to produce the correct url in your views. Open 
 	class AppHelper extends Helper {
 
 		public function url($url = null, $full = false) {
-			if (empty(is_array($url) && !array_key_exists('lang', $url)) {
+			if (is_array($url) && !array_key_exists('lang', $url)) {
 				$url['lang'] = Configure::read('Config.language');
 			}
 			return parent::url($url, $full);
