@@ -76,7 +76,11 @@ class I18nRoute extends CakeRoute {
 		if (empty($url['lang'])) {
 			$url['lang'] = Configure::read('Config.language');
 		}
-		return parent::match($url);
+		$parentMatch = parent::match($url);
+		if(!$parentMatch) {
+			return false;
+		}
+		return preg_replace('#/' . DEFAULT_LANGUAGE . '/#', '/', $parentMatch);
 	}
 
 /**
@@ -90,7 +94,12 @@ class I18nRoute extends CakeRoute {
  */
 	public function parse($url) {
 		$params = parent::parse($url);
+		if (!empty($params['named']['lang'])) {
+			$params['lang'] = $params['named']['lang'];
+			unset($params['named']['lang']);
+		}
 		if ($params !== false && array_key_exists('lang', $params)) {
+			$params['lang'] = empty($params['lang']) ? DEFAULT_LANGUAGE :  $params['lang'];
 			Configure::write('Config.language', $params['lang']);
 		}
 		return $params;
