@@ -39,7 +39,7 @@ Finally you need to tell CakePHP to produce the correct url in your views. Open 
 	class AppHelper extends Helper {
 
 		public function url($url = null, $full = false) {
-			if (empty(is_array($url) && !array_key_exists('lang', $url)) {
+			if (empty(is_array($url)) && !array_key_exists('lang', $url)) {
 				$url['lang'] = Configure::read('Config.language');
 			}
 			return parent::url($url, $full);
