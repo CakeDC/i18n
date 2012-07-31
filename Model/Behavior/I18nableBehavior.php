@@ -83,5 +83,6 @@ class I18nableBehavior extends ModelBehavior {
 				$Model->set(array($settings['languageField'] => $language));
 			}
 		}
+		return true;
 	}
 }
