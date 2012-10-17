@@ -6,10 +6,12 @@ This plugin provides the required classes and method to be able to international
 
 ## Changing the Application language based on the url ##
 
+Please not that this plugin is for automatically setting the language for page contents, not for translating the url itself!
+
 With a few configuration changes you will be able to start internationalizing your application based on the url. For example you might already have an application that runs in a url like
 
 	http://example.com/articles/
-	
+
 And in addition you would like to show the interface in another language, in another url looking like this one:
 
 	http://example.com/fr/articles/
