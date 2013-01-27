@@ -1,0 +1,17 @@
+{
+    "name": "cakedc/i18n",
+    "type": "cakephp-plugin",
+    "description": "Internationalization Plugin for CakePHP",
+    "keywords": ["cakephp","i18n","internationalization","route"],
+    "homepage": "http://cakedc.com",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Cake Development Corporation",
+            "homepage": "http://cakedc.com"
+        }
+    ],
+    "require": {
+        "composer/installers": "*"
+    }
+}
