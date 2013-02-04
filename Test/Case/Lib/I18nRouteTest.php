@@ -149,6 +149,23 @@ class I18nRouteTestCase extends CakeTestCase {
 		$this->assertEquals($result, $expected);
 	}
 
+	public function testMatch_ShouldNotRemoveDefaultLangWhenContainedInTemplate() {
+		$route = new I18nRoute('/:lang/pages/*', array('controller' => 'pages', 'action' => 'display'));
+		$result = $route->match(array('controller' => 'pages', 'action' => 'display', 'home', 'lang' => $this->__defaultLang));
+		$this->assertEquals('/' . $this->__defaultLang . '/pages/home', $result);
+	}
+
+	public function testMatch_ShouldNotRemoveDefaultLangWhenUsedInRouteContent() {
+		$routeStartsChunk = '/' . $this->__defaultLang . '/pages';
+		$route = new I18nRoute(
+			$routeStartsChunk . '/*',
+			array('controller' => 'pages', 'action' => 'display', 'lang' => $this->__defaultLang),
+			array('disableAutoNamedLang' => true)
+		);
+		$result = $route->match(array('controller' => 'pages', 'action' => 'display', 'home', 'lang' => $this->__defaultLang));
+		$this->assertEquals($routeStartsChunk . '/home', $result);
+	}
+
 /**
  * Testing pagination urls with translation
  *
