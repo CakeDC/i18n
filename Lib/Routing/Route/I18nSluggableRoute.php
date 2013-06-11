@@ -58,7 +58,7 @@ class I18nSluggableRoute extends I18nRoute {
  */
 	public function match($url) {
 		if (empty($url['lang'])) {
-			$url['lang'] = Configure::read('Config.language');
+			$url['lang'] = $this->getDefaultLanguage();
 		}
 		return $this->_Sluggable->match($url);
 	}

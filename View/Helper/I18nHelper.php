@@ -18,21 +18,21 @@
  * @subpackage i18n.views.helpers
  */
 class I18nHelper extends AppHelper {
-	
+
 /**
  * Helpers
  *
  * @var array $helpers
  */
 	public $helpers = array('Html');
-	
+
 /**
  * Base path for the flags images, with a trailing slash
  * 
  * @var string $basePath
  */
 	public $basePath = '/i18n/img/flags/';
-	
+
 /**
  * Displays a list of flags
  * 
@@ -51,25 +51,24 @@ class I18nHelper extends AppHelper {
 			'appendName' => false);
 		$options = array_merge($_defaults, $options);
 		$langs = $this->availableLanguages();
-		
+
 		$out = '';
 		if (!empty($langs)) {
-			$id = empty($options['id']) ? ''  : ' id="' . $options['id'] . '"';
+			$id = empty($options['id']) ? '' : ' id="' . $options['id'] . '"';
 			$out .= '<ul class="' . $options['class'] . '"' . $id . '>';
-			foreach($langs as $lang) {
+			foreach ($langs as $lang) {
 				$class = $lang;
 				if ($lang == Configure::read('Config.language')) {
 					$class .= ' selected';
 				}
 				$url = array_merge($this->params['named'], $this->params['pass'], compact('lang'));
-				$out .= 
-				'<li class="' . $class . '">' .
+				$out .= '<li class="' . $class . '">' .
 					$this->Html->link($this->flagImage($lang, $options), $url, array('escape' => false)) .
 				'</li>';
 			}
 			$out .= '</ul>';
 		}
-		
+
 		return $out;
 	}
 
@@ -108,13 +107,14 @@ class I18nHelper extends AppHelper {
 		}
 		return $result;
 	}
-	
+
 /**
  * Returns all the available languages on the website
- * 
+ *
  * @param boolean $includeCurrent Whether or not the current language must be included in the result
- * @return array List of available language codes 
- */	
+ * @param bool    $realNames
+ * @return array List of available language codes
+ */
 	public function availableLanguages($includeCurrent = true, $realNames = false) {
 		$languages = Configure::read('Config.languages');
 		if (defined('DEFAULT_LANGUAGE') && false === array_search(DEFAULT_LANGUAGE, $languages)) {
