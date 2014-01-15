@@ -81,7 +81,7 @@ class I18nRoute extends CakeRoute {
 			return false;
 		}
 
-		if ($this->__shouldStripDefaultLanguageOnMatch()) {
+		if ($this->_shouldStripDefaultLanguageOnMatch()) {
 			$parentMatch = preg_replace('#/' . DEFAULT_LANGUAGE . '/#', '/', $parentMatch);
 		}
 		return $parentMatch;
@@ -114,10 +114,9 @@ class I18nRoute extends CakeRoute {
  *
  * @return boolean
  */
-	private function __shouldStripDefaultLanguageOnMatch() {
+	protected function _shouldStripDefaultLanguageOnMatch() {
 		$hasNamedParam = strpos($this->template, ':lang') !== false;
 		$hasHardcodedDefaultLang = strpos($this->template, '/' . DEFAULT_LANGUAGE . '/') !== false;
-
 		return !($hasNamedParam || $hasHardcodedDefaultLang);
 	}
 
