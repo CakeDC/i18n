@@ -97,7 +97,8 @@ class I18nHelper extends AppHelper {
 		}
 
 		if (strpos($lang, '-') !== false) {
-			$flag = array_pop(explode('-', $lang));
+			$pieces = explode('-', $lang);
+			$flag = array_pop($pieces);
 		}
 
 		$result = $this->Html->image($options['basePath'] . $flag . '.png');
