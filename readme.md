@@ -5,7 +5,7 @@ CakeDC I18n Plugin
 [![Downloads](https://poser.pugx.org/CakeDC/i18n/d/total.png)](https://packagist.org/packages/CakeDC/i18n)
 [![Latest Version](https://poser.pugx.org/CakeDC/i18n/v/stable.png)](https://packagist.org/packages/CakeDC/i18n)
 
-This **I18n** provides the required classes and method to be able to internationalize your application more easily. Basically it offers a very simple way of switching your application default language based on the url, It also provides classes to auto translate content using the Google translate API.
+The **I18n** plugin provides the required classes and method to be able to internationalize your application more easily. Basically it offers a very simple way of switching your application default language based on the url, It also provides classes to auto translate content using the Google translate API.
 
 Requirements
 ------------
