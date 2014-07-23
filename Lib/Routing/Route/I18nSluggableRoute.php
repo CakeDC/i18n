@@ -10,7 +10,7 @@
  */
 
 App::uses('I18nRoute', 'I18n.Routing/Route');
-App::uses('SluggableRoute', 'Slugger.Routing/Route');
+App::uses('SluggableRoute', 'I18n.Routing/Route');
 
 /**
  * I18nSluggable Route

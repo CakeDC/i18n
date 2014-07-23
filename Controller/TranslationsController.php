@@ -17,6 +17,7 @@ App::uses('I18nAppController', 'I18n.Controller');
  * @package I18n.Controller
  */
 class TranslationsController extends I18nAppController {
+
 /**
  * Controller name
  *
@@ -31,7 +32,10 @@ class TranslationsController extends I18nAppController {
  * @var array
  * @access public
  */
-	public $helpers = array('Html', 'Form');
+	public $helpers = array(
+		'Html',
+		'Form'
+	);
 
 /**
  * Components
@@ -39,7 +43,9 @@ class TranslationsController extends I18nAppController {
  * @var array
  * @access public
  */
-	public $components = array('Search.Prg');
+	public $components = array(
+		'Search.Prg'
+	);
 
 /**
  * Fields to preset in search forms
@@ -68,11 +74,11 @@ class TranslationsController extends I18nAppController {
  */
 	public function admin_index() {
 		$this->Prg->commonProcess();
-		$this->paginate = array(
+		$this->Paginator->settings = array(
 			'search',
-			'conditions' => $this->Translation->parseCriteria($this->passedArgs));
-
-		$this->set('translations', $this->paginate()); 
+			'conditions' => $this->Translation->parseCriteria($this->passedArgs)
+		);
+		$this->set('translations', $this->Paginator->paginate());
 	}
 
 /**
@@ -88,7 +94,7 @@ class TranslationsController extends I18nAppController {
 			$this->Session->setFlash($e->getMessage());
 			$this->redirect(array('action' => 'index'));
 		}
-		$this->set(compact('translation')); 
+		$this->set(compact('translation'));
 	}
 
 /**
@@ -109,7 +115,6 @@ class TranslationsController extends I18nAppController {
 			$this->Session->setFlash($e->getMessage());
 			$this->redirect(array('action' => 'index'));
 		}
- 
 	}
 
 /**
@@ -124,7 +129,6 @@ class TranslationsController extends I18nAppController {
 			if ($result === true) {
 				$this->Session->setFlash(__('Translation saved', true));
 				$this->redirect(array('action' => 'view', $this->Translation->data['Translation']['id']));
-				
 			} else {
 				$this->data = $result;
 			}
@@ -177,5 +181,4 @@ class TranslationsController extends I18nAppController {
 			$this->set('translation', $this->Translation->data['translation']);
 		}
 	}
-
 }

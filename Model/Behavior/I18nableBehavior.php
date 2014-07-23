@@ -36,10 +36,10 @@ class I18nableBehavior extends ModelBehavior {
 /**
  * Setup
  *
- * @param AppModel $Model
+ * @param Model $Model
  * @param array $settings
  */
-	public function setup($Model, $settings = array()) {
+	public function setup(Model $Model, $settings = array()) {
 		if (!isset($this->settings[$Model->alias])) {
 			$this->settings[$Model->alias] = $this->defaults;
 		}
@@ -76,7 +76,7 @@ class I18nableBehavior extends ModelBehavior {
  * @param Model $Model
  * @return void
  */
-	public function beforeSave(Model $Model) {
+	public function beforeSave(Model $Model, $options = array()) {
 		if (empty($this->settings[$Model->alias])) {
 			return;
 		}

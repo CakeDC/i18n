@@ -24,7 +24,9 @@ class I18nableTestCase extends CakeTestCase {
  * @var array
  * @access public
  */
-	var $fixtures = array('plugin.i18n.article'); 
+	public $fixtures = array(
+		'plugin.i18n.article'
+	);
 
 /**
  * startTest
@@ -48,33 +50,32 @@ class I18nableTestCase extends CakeTestCase {
 	}
 
 	public function testSave() {
-		Configure::write('Config.language', 'eng'); 
+		Configure::write('Config.language', 'eng');
 		$article = array(
 			'title' => 'New Article');
 		$this->Article->create($article);
 		$result = $this->Article->save();
 		$this->assertTrue(!empty($result));
-		$this->assertEqual($result['Article']['language_id'], 'eng');
+		$this->assertEquals($result['Article']['language_id'], 'eng');
 	}
 
 	public function testFind() {
-		Configure::write('Config.language', 'eng'); 
+		Configure::write('Config.language', 'eng');
 		$articles = $this->Article->find('all');
-		$this->assertEqual(count($articles), 1);
-		$this->assertEqual($articles[0]['Article']['id'], 'article-1');
+		$this->assertEquals(count($articles), 1);
+		$this->assertEquals($articles[0]['Article']['id'], 'article-1');
 
 		$articles = $this->Article->find('all', array('language' => 'fra'));
-		$this->assertEqual(count($articles), 1);
-		$this->assertEqual($articles[0]['Article']['id'], 'article-2');
+		$this->assertEquals(count($articles), 1);
+		$this->assertEquals($articles[0]['Article']['id'], 'article-2');
 
-		Configure::write('Config.language', 'fra'); 
+		Configure::write('Config.language', 'fra');
 		$articles = $this->Article->find('all');
-		$this->assertEqual(count($articles), 1);
-		$this->assertEqual($articles[0]['Article']['id'], 'article-2');
+		$this->assertEquals(count($articles), 1);
+		$this->assertEquals($articles[0]['Article']['id'], 'article-2');
 
 		$articles = $this->Article->find('all', array('ignoreLanguage' => true));
-		$this->assertEqual(count($articles), 2);
+		$this->assertEquals(count($articles), 2);
 	}
- 
+
 }
-?>

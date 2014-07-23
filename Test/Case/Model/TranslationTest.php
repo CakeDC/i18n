@@ -1,9 +1,22 @@
 <?php
+/**
+ * Copyright 2009-2010, Cake Development Corporation (http://cakedc.com)
+ *
+ * Licensed under The MIT License
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @copyright Copyright 2009-2010, Cake Development Corporation (http://cakedc.com)
+ * @license MIT License (http://www.opensource.org/licenses/mit-license.php)
+ */
+
 App::uses('Translation', 'I18n.Model');
 
 class TranslationTestCase extends CakeTestCase {
 
-	public $fixtures = array('plugin.i18n.translation');
+	public $fixtures = array(
+		'plugin.i18n.translation',
+		'plugin.i18n.i18n'
+	);
 
 /**
  * Start Test callback
@@ -33,7 +46,7 @@ class TranslationTestCase extends CakeTestCase {
 	}
 
 /**
- * Test adding a Translation 
+ * Test adding a Translation
  *
  * @return void
  * @access public
@@ -44,7 +57,7 @@ class TranslationTestCase extends CakeTestCase {
 		$data['Translation']['foreign_key'] = 'article-2';
 		$result = $this->Translation->add($data);
 		$this->assertTrue($result);
-		
+
 		try {
 			$data = $this->record;
 			unset($data['Translation']['id']);
@@ -52,13 +65,12 @@ class TranslationTestCase extends CakeTestCase {
 			$result = $this->Translation->add($data);
 			$this->fail('No exception');
 		} catch (OutOfBoundsException $e) {
-			$this->pass('Correct exception thrown');
+			// passed
 		}
-		
 	}
 
 /**
- * Test editing a Translation 
+ * Test editing a Translation
  *
  * @return void
  * @access public
@@ -67,14 +79,14 @@ class TranslationTestCase extends CakeTestCase {
 		$result = $this->Translation->edit('translation-1', null);
 
 		$expected = $this->Translation->read(null, 'translation-1');
-		$this->assertEqual($result['Translation'], $expected['Translation']);
+		$this->assertEquals($result['Translation'], $expected['Translation']);
 
 		// put invalidated data here
 		$data = $this->record;
 		$data['Translation']['field'] = null;
 
 		$result = $this->Translation->edit('translation-1', $data);
-		$this->assertEqual($result, $data);
+		$this->assertEquals($result, $data);
 
 		$data = $this->record;
 
@@ -87,12 +99,12 @@ class TranslationTestCase extends CakeTestCase {
 			$this->Translation->edit('wrong_id', $data);
 			$this->fail('No exception');
 		} catch (OutOfBoundsException $e) {
-			$this->pass('Correct exception thrown');
+			// passed
 		}
 	}
 
 /**
- * Test viewing a single Translation 
+ * Test viewing a single Translation
  *
  * @return void
  * @access public
@@ -100,18 +112,18 @@ class TranslationTestCase extends CakeTestCase {
 	public function testView() {
 		$result = $this->Translation->view('translation-1');
 		$this->assertTrue(isset($result['Translation']));
-		$this->assertEqual($result['Translation']['id'], 'translation-1');
+		$this->assertEquals($result['Translation']['id'], 'translation-1');
 
 		try {
 			$result = $this->Translation->view('wrong_id');
 			$this->fail('No exception on wrong id');
 		} catch (OutOfBoundsException $e) {
-			$this->pass('Correct exception thrown');
+			// passed
 		}
 	}
 
 /**
- * Test ValidateAndDelete method for a Translation 
+ * Test ValidateAndDelete method for a Translation
  *
  * @return void
  * @access public
@@ -121,7 +133,7 @@ class TranslationTestCase extends CakeTestCase {
 			$postData = array();
 			$this->Translation->validateAndDelete('invalidTranslationId', $postData);
 		} catch (OutOfBoundsException $e) {
-			$this->assertEqual($e->getMessage(), 'Invalid Translation');
+			$this->assertEquals($e->getMessage(), 'Invalid Translation');
 		}
 		try {
 			$postData = array(
@@ -129,7 +141,7 @@ class TranslationTestCase extends CakeTestCase {
 					'confirm' => 0));
 			$result = $this->Translation->validateAndDelete('translation-1', $postData);
 		} catch (Exception $e) {
-			$this->assertEqual($e->getMessage(), 'You need to confirm to delete this Translation');
+			$this->assertEquals($e->getMessage(), 'You need to confirm to delete this Translation');
 		}
 
 		$postData = array(
@@ -138,5 +150,5 @@ class TranslationTestCase extends CakeTestCase {
 		$result = $this->Translation->validateAndDelete('translation-1', $postData);
 		$this->assertTrue($result);
 	}
-	
+
 }
