@@ -38,16 +38,6 @@ class TranslationsController extends I18nAppController {
 	);
 
 /**
- * Components
- *
- * @var array
- * @access public
- */
-	public $components = array(
-		'Search.Prg'
-	);
-
-/**
  * Fields to preset in search forms
  *
  * @var array
@@ -65,7 +55,49 @@ class TranslationsController extends I18nAppController {
  *
  * @var array
  */
-	public $uses = array('I18n.Translation');
+	public $uses = array(
+		'I18n.Translation'
+	);
+
+/**
+ * Constructor
+ *
+ * @param CakeRequest $request Request object for this controller. Can be null for testing,
+ *  but expect that features that use the request parameters will not work.
+ * @param CakeResponse $response Response object for this controller.
+ */
+	public function __construct($request, $response) {
+		$this->_setupComponents();
+		parent::__construct($request, $response);
+	}
+
+/**
+ * Setup components based on plugin availability
+ *
+ * @return void
+ * @link https://github.com/CakeDC/search
+ */
+	protected function _setupComponents() {
+		if ($this->_pluginLoaded('Search', false)) {
+			$this->components[] = 'Search.Prg';
+		}
+	}
+
+/**
+ * Wrapper for CakePlugin::loaded()
+ *
+ * @throws MissingPluginException
+ * @param string $plugin
+ * @param boolean $exceiption
+ * @return boolean
+ */
+	protected function _pluginLoaded($plugin, $exception = true) {
+		$result = CakePlugin::loaded($plugin);
+		if ($exception === true && $result === false) {
+			throw new MissingPluginException(array('plugin' => $plugin));
+		}
+		return $result;
+	}
 
 /**
  * Admin index for translation.
@@ -73,10 +105,15 @@ class TranslationsController extends I18nAppController {
  * @access public
  */
 	public function admin_index() {
-		$this->Prg->commonProcess();
+		if ($this->_pluginLoaded('Search', false)) {
+			$this->Prg->commonProcess();
+			$conditions = $this->Translation->parseCriteria($this->passedArgs);
+		} else {
+			$conditions= array();
+		}
 		$this->Paginator->settings = array(
 			'search',
-			'conditions' => $this->Translation->parseCriteria($this->passedArgs)
+			'conditions' => $conditions
 		);
 		$this->set('translations', $this->Paginator->paginate());
 	}

@@ -8,23 +8,25 @@ echo $this->Paginator->counter(array(
 ?></p>
 <div>
 
-<?php 
-	echo $this->Form->create('Translation', array('action' => 'index'));
-	
-	echo $this->Form->input("locale", array(
-			'type' => 'text',
-			'label' => __('Locale Name', true)));
-	echo $this->Form->input("model", array(
-			'type' => 'text',
-			'label' => __('Model Name', true)));
-	echo $this->Form->input("field", array(
-			'type' => 'text',
-			'label' => __('Field', true)));
-	echo $this->Form->input("content", array(
-			'type' => 'text',
-			'label' => __('Content', true)));
-			
-	echo $this->Form->end(__('Search', true));
+<?php
+	if (CakePlugin::loaded('Search')) {
+		echo $this->Form->create('Translation', array('action' => 'index'));
+
+		echo $this->Form->input("locale", array(
+				'type' => 'text',
+				'label' => __('Locale Name', true)));
+		echo $this->Form->input("model", array(
+				'type' => 'text',
+				'label' => __('Model Name', true)));
+		echo $this->Form->input("field", array(
+				'type' => 'text',
+				'label' => __('Field', true)));
+		echo $this->Form->input("content", array(
+				'type' => 'text',
+				'label' => __('Content', true)));
+
+		echo $this->Form->end(__('Search', true));
+	}
 
 ?>
 </div>
