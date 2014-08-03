@@ -1,11 +1,11 @@
 <?php
 /**
- * Copyright 2009-2010, Cake Development Corporation (http://cakedc.com)
+ * Copyright 2009-2014, Cake Development Corporation (http://cakedc.com)
  *
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
  *
- * @copyright Copyright 2009-2010, Cake Development Corporation (http://cakedc.com)
+ * @copyright Copyright 2009-2014, Cake Development Corporation (http://cakedc.com)
  * @license MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 
@@ -20,14 +20,15 @@ App::uses('I18nRoute', 'I18n.Routing/Route');
  * @author i18n.test.cases.libs
  */
 class I18nRouteTestCase extends CakeTestCase {
+
 /**
  * Default language of the application
  * 
  * @var string
  * @access private
  */
-	private $__defaultLang = 'eng'; 
-	
+	private $__defaultLang = 'eng';
+
 /**
  * startTest method
  *
@@ -40,7 +41,7 @@ class I18nRouteTestCase extends CakeTestCase {
 		Configure::write('Config.language', 'spa');
 		Configure::write('Config.languages', array('eng', 'fre', 'spa'));
 		Configure::write('Routing', array('admin' => null, 'prefixes' => array()));
-		
+
 		if (defined('DEFAULT_LANGUAGE')) {
 			$this->__defaultLang = DEFAULT_LANGUAGE;
 		} else {
@@ -99,7 +100,7 @@ class I18nRouteTestCase extends CakeTestCase {
  *
  * @return void
  */
-	function testMatchBasic() {
+	public function testMatchBasic() {
 		$route = new I18nRoute('/:controller/:action/:id', array('plugin' => null));
 		$result = $route->match(array('controller' => 'posts', 'action' => 'view', 'plugin' => null));
 		$this->assertFalse($result);
@@ -109,7 +110,7 @@ class I18nRouteTestCase extends CakeTestCase {
 
 		$result = $route->match(array('plugin' => null, 'controller' => 'posts', 'action' => 'view', 'id' => 1));
 		$this->assertEquals($result, '/spa/posts/view/1');
-		
+
 		$result = $route->match(array('plugin' => null, 'controller' => 'posts', 'action' => 'view', 'id' => 1, 'lang' => 'fre'));
 		$this->assertEquals($result, '/fre/posts/view/1');
 
@@ -147,6 +148,23 @@ class I18nRouteTestCase extends CakeTestCase {
 		$result = $route->match($url);
 		$expected = '/spa/admin/subscriptions/edit/1';
 		$this->assertEquals($result, $expected);
+	}
+
+	public function testMatch_ShouldNotRemoveDefaultLangWhenContainedInTemplate() {
+		$route = new I18nRoute('/:lang/pages/*', array('controller' => 'pages', 'action' => 'display'));
+		$result = $route->match(array('controller' => 'pages', 'action' => 'display', 'home', 'lang' => $this->__defaultLang));
+		$this->assertEquals('/' . $this->__defaultLang . '/pages/home', $result);
+	}
+
+	public function testMatch_ShouldNotRemoveDefaultLangWhenUsedInRouteContent() {
+		$routeStartsChunk = '/' . $this->__defaultLang . '/pages';
+		$route = new I18nRoute(
+			$routeStartsChunk . '/*',
+			array('controller' => 'pages', 'action' => 'display', 'lang' => $this->__defaultLang),
+			array('disableAutoNamedLang' => true)
+		);
+		$result = $route->match(array('controller' => 'pages', 'action' => 'display', 'home', 'lang' => $this->__defaultLang));
+		$this->assertEquals($routeStartsChunk . '/home', $result);
 	}
 
 /**
@@ -188,7 +206,7 @@ class I18nRouteTestCase extends CakeTestCase {
 	public function testParsing() {
 		Configure::write('Routing.prefixes', array('admin'));
 		Router::reload();
-		
+
 		Router::connect('/', array('controller' => 'pages', 'action' => 'display', 'home'), array('routeClass' => 'I18nRoute'));
 		include CakePlugin::path('I18n') . 'Config' . DS . 'routes.php';
 		/*
@@ -199,7 +217,7 @@ class I18nRouteTestCase extends CakeTestCase {
 		);
 		$this->assertEquals($expected, $result);
 		$this->assertEquals(Configure::read('Config.language'), $this->__defaultLang);
-		
+
 		$result = Router::parse('/posts/view/42');
 		$expected = array(
 			'plugin' => null, 'controller' => 'posts', 'action' => 'view',
@@ -207,13 +225,12 @@ class I18nRouteTestCase extends CakeTestCase {
 		);
 		$this->assertEquals($expected, $result);
 
-
 		$result = Router::parse('/admin/posts/view/42');
 		$expected = array(
 			'plugin' => null, 'controller' => 'posts', 'action' => 'admin_view', 'admin' => true
 			'named' => array(), 'pass' => array(42), 'lang' => $this->__defaultLang, 'prefix' => 'admin'
 		);
-		
+
 		$this->assertEquals($expected, $result);
 
 		$result = Router::parse('/spa');
@@ -223,7 +240,7 @@ class I18nRouteTestCase extends CakeTestCase {
 		);
 		$this->assertEquals($expected, $result);
 		$this->assertEquals(Configure::read('Config.language'), 'spa');
-		
+
 		*/
 		$result = Router::parse('/spa/posts/view/42');
 		$expected = array(
@@ -248,7 +265,7 @@ class I18nRouteTestCase extends CakeTestCase {
  */
 	public function testConnectDefaultRoutes() {
 		App::build(array(
-			'Plugin' =>  array(
+			'Plugin' => array(
 				CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS
 			)
 		), APP::RESET);
@@ -260,24 +277,23 @@ class I18nRouteTestCase extends CakeTestCase {
 
 		$result = Router::url(array('plugin' => 'plugin_js', 'controller' => 'js_file', 'action' => 'index'));
 		$this->assertEquals($result, '/spa/plugin_js/js_file');
-		
+
 		$result = Router::url(array('plugin' => 'plugin_js', 'controller' => 'js_file', 'action' => 'index', 'admin' => true));
 		$this->assertEquals($result, '/spa/admin/plugin_js/js_file');
 
-		
 		$result = Router::parse('/plugin_js/js_file');
 		$expected = array(
 			'plugin' => 'plugin_js', 'controller' => 'js_file', 'action' => 'index',
 			'named' => array(), 'pass' => array(), 'lang' => $this->__defaultLang
 		);
 		$this->assertEquals($result, $expected);
-		
+
 		$result = Router::parse('/admin/plugin_js/js_file');
 		$expected['prefix'] = 'admin';
 		$expected['admin'] = true;
 		$expected['action'] = 'admin_index';
 		$this->assertEquals($result, $expected);
-		
+
 		$result = Router::parse('/spa/admin/plugin_js/js_file');
 		$expected['lang'] = 'spa';
 		$this->assertEquals($result, $expected);
@@ -304,7 +320,7 @@ class I18nRouteTestCase extends CakeTestCase {
 		$result = Router::parse('/');
 		$expected = array('named' => array(), 'pass' => array('home'), 'controller' => 'pages', 'action' => 'display', 'plugin' => null);
 		$this->assertEquals($result, $expected);
-		
+
 		Configure::write('Config.language', 'eng');
 		Configure::write('Config.languages', array('spa'));
 		Router::reload();

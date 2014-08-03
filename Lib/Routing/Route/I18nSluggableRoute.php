@@ -5,12 +5,12 @@
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
  *
- * @copyright Copyright 2009-2010, Cake Development Corporation (http://cakedc.com)
+ * @copyright Copyright 2009-2014, Cake Development Corporation (http://cakedc.com)
  * @license MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 
 App::uses('I18nRoute', 'I18n.Routing/Route');
-App::uses('SluggableRoute', 'Slugger.Routing/Route');
+App::uses('SluggableRoute', 'I18n.Routing/Route');
 
 /**
  * I18nSluggable Route
@@ -58,7 +58,7 @@ class I18nSluggableRoute extends I18nRoute {
  */
 	public function match($url) {
 		if (empty($url['lang'])) {
-			$url['lang'] = Configure::read('Config.language');
+			$url['lang'] = $this->getDefaultLanguage();
 		}
 		return $this->_Sluggable->match($url);
 	}

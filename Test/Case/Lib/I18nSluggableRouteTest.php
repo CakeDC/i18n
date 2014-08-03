@@ -5,10 +5,9 @@
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
  *
- * @copyright Copyright 2009-2010, Cake Development Corporation (http://cakedc.com)
+ * @copyright Copyright 2009-2014, Cake Development Corporation (http://cakedc.com)
  * @license MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
-
 
 App::uses('Model', 'Model');
 App::uses('Router', 'Routing');
@@ -16,11 +15,14 @@ App::uses('CakeRoute', 'Routing/Route');
 App::uses('I18nRoute', 'I18n.Routing/Route');
 App::uses('I18nSluggableRoute', 'I18n.Routing/Route');
 
-
 class I18nUser extends Model {
+
 	public $name = 'User';
+
 	public $useTable = 'users';
+
 	public $alias = 'User';
+
 	public $displayField = 'username';
 }
 
@@ -31,20 +33,14 @@ class I18nUser extends Model {
 class I18nSluggableRouteTestCase extends CakeTestCase {
 
 /**
- * Autoload entrypoint for fixtures dependecy solver
- *
- * @var string
- * @access public
- */
-	public $plugin = 'i18n';
-
-/**
  * Fixtrues
  *
  * @var array
  * @access public
  */
-	public $fixtures = array('plugin.i18n.user');
+	public $fixtures = array(
+		'plugin.i18n.user'
+	);
 
 /**
  * Default language of the application
@@ -52,7 +48,7 @@ class I18nSluggableRouteTestCase extends CakeTestCase {
  * @var string
  * @access private
  */
-	private $__defaultLang = 'eng'; 
+	private $__defaultLang = 'eng';
 
 /**
  * startTest method
@@ -66,7 +62,7 @@ class I18nSluggableRouteTestCase extends CakeTestCase {
 		Configure::write('Config.language', 'spa');
 		Configure::write('Config.languages', array('eng', 'fre', 'spa'));
 		Configure::write('Routing', array('admin' => null, 'prefixes' => array()));
-		
+
 		if (defined('DEFAULT_LANGUAGE')) {
 			$this->__defaultLang = DEFAULT_LANGUAGE;
 		} else {
@@ -90,10 +86,10 @@ class I18nSluggableRouteTestCase extends CakeTestCase {
 		$this->assertFalse($result);
 
 		$result = $route->match(array('controller' => 'users', 'action' => 'view', 'plugin' => null, 'user-1'));
-		$this->assertEqual($result, '/spa/users/view/phpnut');
+		$this->assertEquals($result, '/spa/users/view/phpnut');
 
 		$result = $route->match(array('lang' => 'fre', 'controller' => 'users', 'action' => 'view', 'plugin' => null, 'user-1'));
-		$this->assertEqual($result, '/fre/users/view/phpnut');
+		$this->assertEquals($result, '/fre/users/view/phpnut');
 	}
 
 /**
@@ -118,8 +114,8 @@ class I18nSluggableRouteTestCase extends CakeTestCase {
 			'lang' => $this->__defaultLang
 		);
 
-		$this->assertEqual($result, $expected);
-		$this->assertEqual(Configure::read('Config.language'), $this->__defaultLang);
+		$this->assertEquals($result, $expected);
+		$this->assertEquals(Configure::read('Config.language'), $this->__defaultLang);
 		
 		$result = Router::parse('/fre/users/view/phpnut');
 		$expected = array(
@@ -127,7 +123,7 @@ class I18nSluggableRouteTestCase extends CakeTestCase {
 			'pass' => array('user-1'), 'lang' => 'fre', 'named' => array(),
 			'I18nUser' => 'phpnut'
 		);
-		$this->assertEqual($result, $expected);
+		$this->assertEquals($result, $expected);
 
 		$result = Router::parse('/users/view/invalid-user');
 		$expected = array(
