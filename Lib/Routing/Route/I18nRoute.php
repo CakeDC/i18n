@@ -1,11 +1,11 @@
 <?php
 /**
- * Copyright 2009-2010, Cake Development Corporation (http://cakedc.com)
+ * Copyright 2009-2014, Cake Development Corporation (http://cakedc.com)
  *
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
  *
- * @copyright Copyright 2009-2010, Cake Development Corporation (http://cakedc.com)
+ * @copyright Copyright 2009-2014, Cake Development Corporation (http://cakedc.com)
  * @license MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 
@@ -23,7 +23,7 @@ class I18nRoute extends CakeRoute {
  * Internal flag to know whether default routes were mapped or not
  * 
  * @var boolean
- */	
+ */
 	private static $__defaultsMapped = false;
 
 /**
@@ -32,15 +32,15 @@ class I18nRoute extends CakeRoute {
  * @var string
  */
 	public $name = __CLASS__;
-	
+
 /**
  * Constructor for a Route
  * Add a regex condition on the lang param to be sure it matches the available langs
  *
  * @param string $template Template string with parameter placeholders
- * @param array $defaults Array of defaults for the route.
- * @param string $params Array of parameters and additional options for the Route
- * @return void
+ * @param array  $defaults Array of defaults for the route.
+ * @param array  $options Array of parameters and additional options for the Route
+ * @return \I18nRoute
  */
 	public function __construct($template, $defaults = array(), $options = array()) {
 		if (strpos($template, ':lang') === false && empty($options['disableAutoNamedLang'])) {
@@ -52,12 +52,12 @@ class I18nRoute extends CakeRoute {
 			$options += array('__promote' => true);
 			$template = '/:lang' . $template;
 		}
-		
+
 		$options = array_merge((array)$options, array(
 			'lang' => join('|', Configure::read('Config.languages')),
 		));
 		unset($options['disableAutoNamedLang']);
-		
+
 		if ($template == '/:lang/') {
 			$template = '/:lang';
 		}
@@ -74,13 +74,17 @@ class I18nRoute extends CakeRoute {
  */
 	public function match($url) {
 		if (empty($url['lang'])) {
-			$url['lang'] = Configure::read('Config.language');
+			$url['lang'] = $this->getDefaultLanguage();
 		}
 		$parentMatch = parent::match($url);
-		if(!$parentMatch) {
+		if (!$parentMatch) {
 			return false;
 		}
-		return preg_replace('#/' . DEFAULT_LANGUAGE . '/#', '/', $parentMatch);
+
+		if ($this->_shouldStripDefaultLanguageOnMatch()) {
+			$parentMatch = preg_replace('#/' . DEFAULT_LANGUAGE . '/#', '/', $parentMatch);
+		}
+		return $parentMatch;
 	}
 
 /**
@@ -99,9 +103,35 @@ class I18nRoute extends CakeRoute {
 			unset($params['named']['lang']);
 		}
 		if ($params !== false && array_key_exists('lang', $params)) {
-			$params['lang'] = empty($params['lang']) ? DEFAULT_LANGUAGE :  $params['lang'];
+			$params['lang'] = empty($params['lang']) ? DEFAULT_LANGUAGE : $params['lang'];
 			Configure::write('Config.language', $params['lang']);
 		}
 		return $params;
 	}
+
+/**
+ * Whether the default language code should be removed from the matched url
+ *
+ * @return boolean
+ */
+	protected function _shouldStripDefaultLanguageOnMatch() {
+		$hasNamedParam = strpos($this->template, ':lang') !== false;
+		$hasHardcodedDefaultLang = strpos($this->template, '/' . DEFAULT_LANGUAGE . '/') !== false;
+		return !($hasNamedParam || $hasHardcodedDefaultLang);
+	}
+
+/**
+ * Return default language
+ *
+ * @return string
+ */
+	public function getDefaultLanguage() {
+		$lang = Configure::read('Config.languageOverride');
+		if (empty($lang)) {
+			$lang = Configure::read('Config.language');
+			return $lang;
+		}
+		return $lang;
+	}
+
 }

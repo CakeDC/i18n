@@ -1,11 +1,11 @@
 <?php
 /**
- * Copyright 2009-2010, Cake Development Corporation (http://cakedc.com)
+ * Copyright 2009-2014, Cake Development Corporation (http://cakedc.com)
  *
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
  *
- * @copyright Copyright 2009-2010, Cake Development Corporation (http://cakedc.com)
+ * @copyright Copyright 2009-2014, Cake Development Corporation (http://cakedc.com)
  * @license MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 
@@ -23,7 +23,8 @@ class I18nableBehavior extends ModelBehavior {
  * @var array
  */
 	public $defaults = array(
-		'languageField' => 'language_id'); 
+		'languageField' => 'language_id'
+	);
 
 /**
  * Settings array
@@ -35,10 +36,10 @@ class I18nableBehavior extends ModelBehavior {
 /**
  * Setup
  *
- * @param AppModel $Model
+ * @param Model $Model
  * @param array $settings
  */
-	public function setup($Model, $settings = array()) {
+	public function setup(Model $Model, $settings = array()) {
 		if (!isset($this->settings[$Model->alias])) {
 			$this->settings[$Model->alias] = $this->defaults;
 		}
@@ -48,16 +49,18 @@ class I18nableBehavior extends ModelBehavior {
 /**
  * Add language filter
  *
- * @param AppModel $Model
+ * @param Model $Model
+ * @param array $query
+ * @return array|bool
  */
-	public function beforeFind($Model, $query) {
+	public function beforeFind(Model $Model, $query) {
 		if (empty($this->settings[$Model->alias])) {
 			return;
 		}
 		$settings = $this->settings[$Model->alias];
 		$language = Configure::read('Config.language');
 		if ($Model->hasField($settings['languageField']) && (!isset($query['ignoreLanguage']))) {
-			if (empty($query['conditions'][$Model->alias. '.' . $settings['languageField']])) {
+			if (empty($query['conditions'][$Model->alias . '.' . $settings['languageField']])) {
 				if (isset($query['language'])) {
 					$language = $query['language'];
 				}
@@ -70,13 +73,14 @@ class I18nableBehavior extends ModelBehavior {
 /**
  * Set current language 
  *
- * @param AppModel $Model
+ * @param Model $Model
+ * @return void
  */
-	public function beforeSave($Model) {
+	public function beforeSave(Model $Model, $options = array()) {
 		if (empty($this->settings[$Model->alias])) {
 			return;
 		}
-		$settings = $this->settings[$Model->alias];		
+		$settings = $this->settings[$Model->alias];
 		$language = Configure::read('Config.language');
 		if ($Model->hasField($settings['languageField'])) {
 			if (empty($Model->data[$Model->alias][$settings['languageField']])) {

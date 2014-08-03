@@ -1,16 +1,16 @@
 <?php
-/* Translations Test cases generated on: 2011-09-28 12:09:58 : 1317214078*/
-App::import('Controller', 'I18n.Translations');
-
-App::import('Lib', 'Templates.AppTestCase');
-class TranslationsControllerTestCase extends AppTestCase {
 /**
- * Autoload entrypoint for fixtures dependecy solver
+ * Copyright 2009-2014, Cake Development Corporation (http://cakedc.com)
  *
- * @var string
- * @access public
+ * Licensed under The MIT License
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @copyright Copyright 2009-2014, Cake Development Corporation (http://cakedc.com)
+ * @license MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
-	public $plugin = 'i18n';
+App::uses('TranslationsController', 'I18n.Controller');
+
+class TranslationsControllerTestCase extends CakeTestCase {
 
 /**
  * Test to run for the test case (e.g array('testFind', 'testView'))
@@ -24,13 +24,11 @@ class TranslationsControllerTestCase extends AppTestCase {
 /**
  * Start Test callback
  *
- * @param string $method
  * @return void
- * @access public
  */
-	public function startTest($method) {
-		parent::startTest($method);
-		$this->Translations = AppMock::getTestController('TranslationsController');
+	public function setUp() {
+		parent::setUp();
+		$this->Translations = new TranslationsController();
 		$this->Translations->constructClasses();
 		$this->Translations->Prg->initialize($this->Translations);
 		$this->Translations->params = array(
@@ -44,12 +42,10 @@ class TranslationsControllerTestCase extends AppTestCase {
 /**
  * End Test callback
  *
- * @param string $method
  * @return void
- * @access public
  */
-	public function endTest($method) {
-		parent::endTest($method);
+	public function tearDown() {
+		parent::tearDown();
 		unset($this->Translations);
 		ClassRegistry::flush();
 	}
@@ -57,12 +53,12 @@ class TranslationsControllerTestCase extends AppTestCase {
 /**
  * Convenience method to assert Flash messages
  *
+ * @param string $message
  * @return void
- * @access public
  */
 	public function assertFlash($message) {
 		$flash = $this->Translations->Session->read('Message.flash');
-		$this->assertEqual($flash['message'], $message);
+		$this->assertEquals($flash['message'], $message);
 		$this->Translations->Session->delete('Message.flash');
 	}
 
@@ -73,10 +69,9 @@ class TranslationsControllerTestCase extends AppTestCase {
  * @access public
  */
 	public function testInstance() {
-		$this->assertIsA($this->Translations, 'TranslationsController');
-		//$this->assertIsA($this->Translations->Translation, 'Translation');
+		$this->assertTrue($this->Translations, 'TranslationsController');
+		$this->assertTrue($this->Translations->Translation, 'Translation');
 	}
-
 
 /**
  * testAdminIndex
@@ -113,7 +108,7 @@ class TranslationsControllerTestCase extends AppTestCase {
  */
 	public function testAdminEdit() {
 		$this->Translations->admin_edit('translation-1');
-		$this->assertEqual($this->Translations->data['Translation'], $this->record['Translation']);
+		$this->assertEquals($this->Translations->data['Translation'], $this->record['Translation']);
 
 		$this->Translations->data = $this->record;
 		$this->Translations->admin_edit('translation-1');
@@ -126,7 +121,6 @@ class TranslationsControllerTestCase extends AppTestCase {
  * testAdminView
  *
  * @return void
- * @access public
  */
 	public function testAdminView() {
 		$this->Translations->admin_view('translation-1');
@@ -142,7 +136,6 @@ class TranslationsControllerTestCase extends AppTestCase {
  * testAdminDelete
  *
  * @return void
- * @access public
  */
 	public function testAdminDelete() {
 		$this->Translations->admin_delete('WRONG-ID');
@@ -158,7 +151,4 @@ class TranslationsControllerTestCase extends AppTestCase {
 		$this->assertFlash('Translation deleted');
 		$this->Translations->expectExactRedirectCount();
 	}
-
-
-	
 }

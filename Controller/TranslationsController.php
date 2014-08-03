@@ -1,11 +1,11 @@
 <?php
 /**
- * Copyright 2009-2010, Cake Development Corporation (http://cakedc.com)
+ * Copyright 2009-2014, Cake Development Corporation (http://cakedc.com)
  *
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
  *
- * @copyright Copyright 2009-2010, Cake Development Corporation (http://cakedc.com)
+ * @copyright Copyright 2009-2014, Cake Development Corporation (http://cakedc.com)
  * @license MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 
@@ -17,6 +17,7 @@ App::uses('I18nAppController', 'I18n.Controller');
  * @package I18n.Controller
  */
 class TranslationsController extends I18nAppController {
+
 /**
  * Controller name
  *
@@ -31,15 +32,10 @@ class TranslationsController extends I18nAppController {
  * @var array
  * @access public
  */
-	public $helpers = array('Html', 'Form');
-
-/**
- * Components
- *
- * @var array
- * @access public
- */
-	public $components = array('Search.Prg');
+	public $helpers = array(
+		'Html',
+		'Form'
+	);
 
 /**
  * Fields to preset in search forms
@@ -59,7 +55,49 @@ class TranslationsController extends I18nAppController {
  *
  * @var array
  */
-	public $uses = array('I18n.Translation');
+	public $uses = array(
+		'I18n.Translation'
+	);
+
+/**
+ * Constructor
+ *
+ * @param CakeRequest $request Request object for this controller. Can be null for testing,
+ *  but expect that features that use the request parameters will not work.
+ * @param CakeResponse $response Response object for this controller.
+ */
+	public function __construct($request, $response) {
+		$this->_setupComponents();
+		parent::__construct($request, $response);
+	}
+
+/**
+ * Setup components based on plugin availability
+ *
+ * @return void
+ * @link https://github.com/CakeDC/search
+ */
+	protected function _setupComponents() {
+		if ($this->_pluginLoaded('Search', false)) {
+			$this->components[] = 'Search.Prg';
+		}
+	}
+
+/**
+ * Wrapper for CakePlugin::loaded()
+ *
+ * @throws MissingPluginException
+ * @param string $plugin
+ * @param boolean $exceiption
+ * @return boolean
+ */
+	protected function _pluginLoaded($plugin, $exception = true) {
+		$result = CakePlugin::loaded($plugin);
+		if ($exception === true && $result === false) {
+			throw new MissingPluginException(array('plugin' => $plugin));
+		}
+		return $result;
+	}
 
 /**
  * Admin index for translation.
@@ -67,12 +105,17 @@ class TranslationsController extends I18nAppController {
  * @access public
  */
 	public function admin_index() {
-		$this->Prg->commonProcess();
-		$this->paginate = array(
+		if ($this->_pluginLoaded('Search', false)) {
+			$this->Prg->commonProcess();
+			$conditions = $this->Translation->parseCriteria($this->passedArgs);
+		} else {
+			$conditions= array();
+		}
+		$this->Paginator->settings = array(
 			'search',
-			'conditions' => $this->Translation->parseCriteria($this->passedArgs));
-
-		$this->set('translations', $this->paginate()); 
+			'conditions' => $conditions
+		);
+		$this->set('translations', $this->Paginator->paginate());
 	}
 
 /**
@@ -88,7 +131,7 @@ class TranslationsController extends I18nAppController {
 			$this->Session->setFlash($e->getMessage());
 			$this->redirect(array('action' => 'index'));
 		}
-		$this->set(compact('translation')); 
+		$this->set(compact('translation'));
 	}
 
 /**
@@ -109,7 +152,6 @@ class TranslationsController extends I18nAppController {
 			$this->Session->setFlash($e->getMessage());
 			$this->redirect(array('action' => 'index'));
 		}
- 
 	}
 
 /**
@@ -124,7 +166,6 @@ class TranslationsController extends I18nAppController {
 			if ($result === true) {
 				$this->Session->setFlash(__('Translation saved', true));
 				$this->redirect(array('action' => 'view', $this->Translation->data['Translation']['id']));
-				
 			} else {
 				$this->data = $result;
 			}
@@ -177,5 +218,4 @@ class TranslationsController extends I18nAppController {
 			$this->set('translation', $this->Translation->data['translation']);
 		}
 	}
-
 }

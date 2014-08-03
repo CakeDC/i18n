@@ -1,4 +1,14 @@
 <?php
+/**
+ * Copyright 2009-2014, Cake Development Corporation (http://cakedc.com)
+ *
+ * Licensed under The MIT License
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @copyright Copyright 2009-2014, Cake Development Corporation (http://cakedc.com)
+ * @license MIT License (http://www.opensource.org/licenses/mit-license.php)
+ */
+
 App::uses('I18nAppModel', 'I18n.Model');
 
 class Translation extends I18nAppModel {
@@ -50,26 +60,46 @@ class Translation extends I18nAppModel {
 	);
 
 /**
- * Behaviors
+ * Constructor
  *
- * @var array
+ * @param bool|string $id ID
+ * @param string $table Table
+ * @param string $ds Datasource
  */
-    public $actsAs = array(
-		'Search.Searchable');
+	public function __construct($id = false, $table = null, $ds = null) {
+		$this->_setupBehaviors();
+		parent::__construct($id, $table, $ds);
+	}
+
+/**
+ * Setup available plugins
+ *
+ * This checks for the existence of certain plugins, and if available, uses them.
+ *
+ * @return void
+ * @link https://github.com/CakeDC/search
+ * @link https://github.com/CakeDC/utils
+ */
+	protected function _setupBehaviors() {
+		if (CakePlugin::loaded('Search') && class_exists('SearchableBehavior')) {
+			$this->actsAs[] = 'Search.Searchable';
+		}
+	}
 
 /**
  * List of valid finder method options, supplied as the first parameter to find().
  *
  * @var array
  */
-	public $findMethods = array('search' => true);
+	public $findMethods = array(
+		'search' => true
+	);
 
 /**
  * Adds a new record to the database
  *
  * @param array post data, should be Contoller->data
  * @return array
- * @access public
  */
 	public function add($data = null) {
 		if (!empty($data)) {
@@ -88,7 +118,7 @@ class Translation extends I18nAppModel {
 /**
  * Edits an existing Translation.
  *
- * @param string $id, translation id 
+ * @param string $id, translation id
  * @param array $data, controller post data usually $this->data
  * @return mixed True on successfully save else post data as array
  * @throws OutOfBoundsException If the element does not exists
@@ -122,7 +152,7 @@ class Translation extends I18nAppModel {
 /**
  * Edits an existing Translation.
  *
- * @param string $id, translation id 
+ * @param string $id, translation id
  * @param array $data, controller post data usually $this->data
  * @return mixed True on successfully save else post data as array
  * @throws OutOfBoundsException If the element does not exists
@@ -133,15 +163,15 @@ class Translation extends I18nAppModel {
 			'order' => array('locale'),
 			'conditions' => array(
 				"{$this->alias}.model" => $model,
-				"{$this->alias}.foreign_key" => $foreignKey,				
-				)));
+				"{$this->alias}.foreign_key" => $foreignKey,
+			)
+		));
 
 		if (empty($translations)) {
 			throw new OutOfBoundsException(__('Invalid Translation', true));
 		}
-		
+
 		// @@todo code here
-		
 		// $this->set($translation);
 
 		if (!empty($data[$this->alias])) {
@@ -175,7 +205,6 @@ class Translation extends I18nAppModel {
  * @param string $id, translation id.
  * @return array
  * @throws OutOfBoundsException If the element does not exists
- * @access public
  */
 	public function view($id = null) {
 		$translation = $this->find('first', array(
@@ -192,17 +221,17 @@ class Translation extends I18nAppModel {
 /**
  * Validates the deletion
  *
- * @param string $id, translation id 
+ * @param string $id, translation id
  * @param array $data, controller post data usually $this->data
  * @return boolean True on success
  * @throws OutOfBoundsException If the element does not exists
- * @access public
  */
 	public function validateAndDelete($id = null, $data = array()) {
 		$translation = $this->find('first', array(
 			'conditions' => array(
 				"{$this->alias}.{$this->primaryKey}" => $id,
-				)));
+			))
+		);
 
 		if (empty($translation)) {
 			throw new OutOfBoundsException(__('Invalid Translation', true));
@@ -251,5 +280,4 @@ class Translation extends I18nAppModel {
 			return $results;
 		}
 	}
-
 }
