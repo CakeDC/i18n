@@ -65,7 +65,7 @@ class I18nHelper extends AppHelper {
 				if (isset($this->params['prefix'])) {
 					$prefix = [$this->params['prefix'] => $this->params[$this->params['prefix']]];
 				}
-				$url = array_merge($this->params['named'], $this->params['pass'], compact('lang'));
+				$url = array_merge($prefix, $this->params['named'], $this->params['pass'], compact('lang'));
 				$out .= '<li class="' . $class . '">' .
 					$this->Html->link($this->flagImage($lang, $options), $url, array('escape' => false)) .
 				'</li>';
