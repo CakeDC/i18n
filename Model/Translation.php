@@ -37,13 +37,13 @@ class Translation extends I18nAppModel {
  */
 	public $validate = array(
 		'locale' => array(
-			'notempty' => array('rule' => array('notempty'), 'required' => true, 'allowEmpty' => false, 'message' => 'Please enter a Locale')),
+			'notempty' => array('rule' => array('notBlank'), 'required' => true, 'allowEmpty' => false, 'message' => 'Please enter a Locale')),
 		'model' => array(
-			'notempty' => array('rule' => array('notempty'), 'required' => true, 'allowEmpty' => false, 'message' => 'Please enter a Model')),
+			'notempty' => array('rule' => array('notBlank'), 'required' => true, 'allowEmpty' => false, 'message' => 'Please enter a Model')),
 		'foreign_key' => array(
-			'notempty' => array('rule' => array('notempty'), 'required' => true, 'allowEmpty' => false, 'message' => 'Please enter a Foreign Key')),
+			'notempty' => array('rule' => array('notBlank'), 'required' => true, 'allowEmpty' => false, 'message' => 'Please enter a Foreign Key')),
 		'field' => array(
-			'notempty' => array('rule' => array('notempty'), 'required' => true, 'allowEmpty' => false, 'message' => 'Please enter a Field')),
+			'notempty' => array('rule' => array('notBlank'), 'required' => true, 'allowEmpty' => false, 'message' => 'Please enter a Field')),
 	);
 
 /**
@@ -242,7 +242,7 @@ class Translation extends I18nAppModel {
 			$data['Translation']['id'] = $id;
 			$tmp = $this->validate;
 			$this->validate = array(
-				'id' => array('rule' => 'notEmpty'),
+				'id' => array('rule' => 'notBlank'),
 				'confirm' => array('rule' => '[1]'));
 
 			$this->set($data);
