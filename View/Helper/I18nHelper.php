@@ -154,7 +154,7 @@ class I18nHelper extends AppHelper {
  */
 	protected function _getCatalog() {
 		if (empty($this->L10n)) {
-			App::import('Core', 'L10n');
+			App::import('I18n', 'L10n');
 			$this->L10n = new L10n();
 		}
 		return $this->L10n;
