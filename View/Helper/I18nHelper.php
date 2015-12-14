@@ -44,7 +44,6 @@ class I18nHelper extends AppHelper {
  * @return void
  */
 	public function flagSwitcher($options = array()) {
-        debug('Flags');
 		$_defaults = array(
 			'basePath' => $this->basePath,
 			'class' => 'languages',
