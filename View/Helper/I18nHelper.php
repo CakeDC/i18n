@@ -44,6 +44,7 @@ class I18nHelper extends AppHelper {
  * @return void
  */
 	public function flagSwitcher($options = array()) {
+        debug('Flags');
 		$_defaults = array(
 			'basePath' => $this->basePath,
 			'class' => 'languages',
@@ -74,7 +75,7 @@ class I18nHelper extends AppHelper {
 
 /**
  * Returns the correct image from the language code
- * 
+ *
  * @param string $lang Long language code
  * @param array $options Options with the following possible keys
  * 	- basePath: Base path for the flag images, with a trailing slash
@@ -154,7 +155,7 @@ class I18nHelper extends AppHelper {
  */
 	protected function _getCatalog() {
 		if (empty($this->L10n)) {
-			App::import('I18n', 'L10n');
+			App::uses('L10n', 'I18n');
 			$this->L10n = new L10n();
 		}
 		return $this->L10n;
