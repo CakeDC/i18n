@@ -81,6 +81,7 @@ class TranslationsController extends I18nAppController {
 		if ($this->_pluginLoaded('Search', false)) {
 			$this->components[] = 'Search.Prg';
 		}
+		$this->components[] = 'Paginator';
 	}
 
 /**
@@ -109,8 +110,9 @@ class TranslationsController extends I18nAppController {
 			$this->Prg->commonProcess();
 			$conditions = $this->Translation->parseCriteria($this->passedArgs);
 		} else {
-			$conditions= array();
+			$conditions = array();
 		}
+
 		$this->Paginator->settings = array(
 			'search',
 			'conditions' => $conditions
@@ -152,6 +154,7 @@ class TranslationsController extends I18nAppController {
 			$this->Session->setFlash($e->getMessage());
 			$this->redirect(array('action' => 'index'));
 		}
+
 	}
 
 /**
@@ -182,8 +185,7 @@ class TranslationsController extends I18nAppController {
  * @access public
  */
 	public function admin_edit_multi($model, $foreignKey) {
-		$locales = Configure::read('Config.locales.available');
-		$this->set(compact('model', 'foreignKey', 'locales'));
+		$this->set(compact('model', 'foreignKey'));
 		try {
 			$result = $this->Translation->edit_multi($model, $foreignKey, $this->data);
 			if ($result === true) {

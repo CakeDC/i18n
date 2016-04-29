@@ -81,7 +81,7 @@ class Translation extends I18nAppModel {
  * @link https://github.com/CakeDC/utils
  */
 	protected function _setupBehaviors() {
-		if (CakePlugin::loaded('Search') && class_exists('SearchableBehavior')) {
+		if (CakePlugin::loaded('Search')) {
 			$this->actsAs[] = 'Search.Searchable';
 		}
 	}
