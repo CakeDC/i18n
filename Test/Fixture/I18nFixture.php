@@ -25,7 +25,7 @@ class I18nFixture extends CakeTestFixture {
  * @var string
  * @access public
  */
-	public $table = 'I18n';
+	public $table = 'i18n';
 
 /**
  * Import
@@ -33,7 +33,7 @@ class I18nFixture extends CakeTestFixture {
  * @var string
  * @access public
  */
-	public $import = 'I18n.Translation';
+	public $import = array('table' => 'i18n');
 
 /**
  * Fields
