@@ -85,10 +85,10 @@ class I18nSluggableRouteTestCase extends CakeTestCase {
 		$result = $route->match(array('plugin' => null, 'controller' => 'posts', 'action' => 'view', 0));
 		$this->assertFalse($result);
 
-		$result = $route->match(array('controller' => 'users', 'action' => 'view', 'plugin' => null, 'user-1'));
+		$result = $route->match(array('controller' => 'users', 'action' => 'view', 'plugin' => null, 'I18nUser' => 'phpnut'));
 		$this->assertEquals($result, '/spa/users/view/phpnut');
 
-		$result = $route->match(array('lang' => 'fre', 'controller' => 'users', 'action' => 'view', 'plugin' => null, 'user-1'));
+		$result = $route->match(array('lang' => 'fre', 'controller' => 'users', 'action' => 'view', 'plugin' => null, 'I18nUser' => 'phpnut'));
 		$this->assertEquals($result, '/fre/users/view/phpnut');
 	}
 
@@ -102,35 +102,40 @@ class I18nSluggableRouteTestCase extends CakeTestCase {
 		$route = Router::connect(
 			'/users/view/:I18nUser',
 			array('plugin' => null, 'controller' => 'users', 'action' => 'view'),
-			array('routeClass' => 'I18nSluggableRoute', 'models' => array('I18nUser'))
+			array(
+				'pass' => array('I18nUser'),
+				'routeClass' => 'I18nSluggableRoute',
+				'models' => array('I18nUser')
+			)
 		);
 
 		$result = Router::parse('/users/view/phpnut');
 		$expected = array(
-			'plugin' => null, 'controller' => 'users', 'action' => 'view',
-			'pass' => array('user-1'),
-			'named' => array(),
 			'I18nUser' => 'phpnut',
-			'lang' => $this->__defaultLang
+			'named' => array(),
+			'pass' => array('phpnut'),
+			'plugin' => null,
+			'controller' => 'users',
+			'action' => 'view',
+			'lang' => 'eng'
 		);
 
 		$this->assertEquals($result, $expected);
 		$this->assertEquals(Configure::read('Config.language'), $this->__defaultLang);
-		
+
 		$result = Router::parse('/fre/users/view/phpnut');
 		$expected = array(
-			'plugin' => null, 'controller' => 'users', 'action' => 'view',
-			'pass' => array('user-1'), 'lang' => 'fre', 'named' => array(),
-			'I18nUser' => 'phpnut'
+			'lang' => 'fre',
+			'I18nUser' => 'phpnut',
+			'named' => array(),
+			'pass' => array('phpnut'),
+			'plugin' => null,
+			'controller' => 'users',
+			'action' => 'view'
 		);
 		$this->assertEquals($result, $expected);
 
-		$result = Router::parse('/users/view/invalid-user');
-		$expected = array(
-			'plugin' => null, 'controller' => 'users', 'action' => 'view',
-			'named' => array(), 'pass' => array('invalid-user'),
-			'lang' => $this->__defaultLang
-		);
+		$result = Router::parse('/users/view/');
 		$this->assertEmpty($result);
 	}
 

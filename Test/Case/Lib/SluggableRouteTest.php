@@ -47,7 +47,7 @@ class SluggableRouteTestCase extends CakeTestCase {
 			'action' => 'view',
 			'RouteTest' => 1
 		));
-		$expected = '/route_tests/view/A_page_title';
+		$expected = '/route_tests/view/a-page-title';
 		$this->assertEquals($result, $expected);
 
 		$result = Router::parse('/route_tests/view/A_page_title');
