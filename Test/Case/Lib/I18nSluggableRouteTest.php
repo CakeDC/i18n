@@ -101,13 +101,6 @@ class I18nSluggableRouteTestCase extends CakeTestCase {
 	public function testParsing() {
 		$route = Router::connect(
 			'/users/view/:I18nUser',
-<<<<<<< HEAD
-			array('plugin' => null, 'controller' => 'users', 'action' => 'view'),
-			array(
-				'pass' => array('I18nUser'),
-				'routeClass' => 'I18nSluggableRoute',
-				'models' => array('I18nUser')
-=======
 			array(
 				'plugin' => null,
 				'controller' => 'users',
@@ -119,20 +112,14 @@ class I18nSluggableRouteTestCase extends CakeTestCase {
 				'pass' => array(
 					'I18nUser'
 				)
->>>>>>> 62c5c6deff078ff0de3f09b890960d70b9da689a
 			)
 		);
 
 		$result = Router::parse('/users/view/phpnut');
 		$expected = array(
 			'I18nUser' => 'phpnut',
-<<<<<<< HEAD
 			'named' => array(),
 			'pass' => array('phpnut'),
-=======
-			'named' => array('I18nUser' => 'user-1'),
-			'pass' => array(),
->>>>>>> 62c5c6deff078ff0de3f09b890960d70b9da689a
 			'plugin' => null,
 			'controller' => 'users',
 			'action' => 'view',
@@ -146,15 +133,8 @@ class I18nSluggableRouteTestCase extends CakeTestCase {
 		$expected = array(
 			'lang' => 'fre',
 			'I18nUser' => 'phpnut',
-<<<<<<< HEAD
 			'named' => array(),
 			'pass' => array('phpnut'),
-=======
-			'named' => array(
-				'I18nUser' => 'user-1'
-			),
-			'pass' => array(),
->>>>>>> 62c5c6deff078ff0de3f09b890960d70b9da689a
 			'plugin' => null,
 			'controller' => 'users',
 			'action' => 'view'
@@ -162,23 +142,7 @@ class I18nSluggableRouteTestCase extends CakeTestCase {
 
 		$this->assertEquals($expected, $result);
 
-<<<<<<< HEAD
 		$result = Router::parse('/users/view/');
 		$this->assertEmpty($result);
-=======
-		$result = Router::parse('/users/view/invalid-user');
-		$expected = array(
-			'I18nUser' => 'invalid-user',
-			'named' => array(),
-			'pass' => array(
-				'invalid-user'
-			),
-			'plugin' => null,
-			'controller' => 'users',
-			'action' => 'view',
-			'lang' => 'eng'
-		);
-		$this->assertEquals($expected, $result);
->>>>>>> 62c5c6deff078ff0de3f09b890960d70b9da689a
 	}
 }
