@@ -68,7 +68,7 @@ class TranslationControllerTest extends CakeTestCase {
  * @var array
  */
 	public $fixtures = array(
-		'plugin.i18n.i18n',
+		'plugin.i18n.i18n'
 	);
 
 /**

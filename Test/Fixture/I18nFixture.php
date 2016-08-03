@@ -20,20 +20,12 @@ class I18nFixture extends CakeTestFixture {
 	public $name = 'I18n';
 
 /**
- * Name
+ * Table
  *
  * @var string
  * @access public
  */
 	public $table = 'i18n';
-
-/**
- * Import
- *
- * @var string
- * @access public
- */
-	public $import = array('table' => 'i18n');
 
 /**
  * Fields

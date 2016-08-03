@@ -59,7 +59,7 @@ class I18nSluggableRouteTestCase extends CakeTestCase {
 	public function setUp() {
 		$this->_routing = Configure::read('Routing');
 		$this->_config = Configure::read('Config');
-		Configure::write('Config.language', 'eng');
+		Configure::write('Config.language', 'spa');
 		Configure::write('Config.languages', array('eng', 'fre', 'spa'));
 		Configure::write('Routing', array('admin' => null, 'prefixes' => array()));
 
@@ -118,8 +118,10 @@ class I18nSluggableRouteTestCase extends CakeTestCase {
 		$result = Router::parse('/users/view/phpnut');
 		$expected = array(
 			'I18nUser' => 'phpnut',
-			'named' => array(),
-			'pass' => array('phpnut'),
+			'named' => array(
+				'I18nUser' => 'user-1'
+			),
+			'pass' => array(),
 			'plugin' => null,
 			'controller' => 'users',
 			'action' => 'view',
@@ -133,8 +135,10 @@ class I18nSluggableRouteTestCase extends CakeTestCase {
 		$expected = array(
 			'lang' => 'fre',
 			'I18nUser' => 'phpnut',
-			'named' => array(),
-			'pass' => array('phpnut'),
+			'named' => array(
+				'I18nUser' => 'user-1'
+			),
+			'pass' => array(),
 			'plugin' => null,
 			'controller' => 'users',
 			'action' => 'view'
