@@ -88,7 +88,6 @@ class TranslationControllerTest extends CakeTestCase {
 
 		$this->Translations = $this->__buildTranslationInstance();
 		$this->Translations->constructClasses();
-		$this->Translations->Prg->initialize($this->Translations);
 		$this->Translations->params = array(
 			'named' => array(),
 			'pass' => array(),
