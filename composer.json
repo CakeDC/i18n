@@ -22,6 +22,12 @@
 	},
 	"require": {
 		"php": ">=5.2.8",
-		"composer/installers": "*"
+		"composer/installers": "*",
+		"cakedc/search" : "2.5.*"
+	},
+	"extra": {
+		"installer-paths": {
+			"../../../app/Plugin/Search": ["cakedc/search"]
+		}
 	}
 }

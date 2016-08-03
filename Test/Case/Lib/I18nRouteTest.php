@@ -264,6 +264,7 @@ class I18nRouteTestCase extends CakeTestCase {
  * @access public
  */
 	public function testConnectDefaultRoutes() {
+		Configure::write('Config.language', '');
 		App::build(array(
 			'Plugin' => array(
 				CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS
@@ -274,33 +275,59 @@ class I18nRouteTestCase extends CakeTestCase {
 		Router::reload();
 		include CakePlugin::path('I18n') . 'Config' . DS . 'routes.php';
 
-
 		$result = Router::url(array('plugin' => 'plugin_js', 'controller' => 'js_file', 'action' => 'index'));
-		$this->assertEquals($result, '/spa/plugin_js/js_file');
+		$this->assertEquals('/plugin_js/js_file', $result);
 
 		$result = Router::url(array('plugin' => 'plugin_js', 'controller' => 'js_file', 'action' => 'index', 'admin' => true));
-		$this->assertEquals($result, '/spa/admin/plugin_js/js_file');
+		$this->assertEquals($result, '/admin/plugin_js/js_file');
 
 		$result = Router::parse('/plugin_js/js_file');
 		$expected = array(
-			'plugin' => 'plugin_js', 'controller' => 'js_file', 'action' => 'index',
-			'named' => array(), 'pass' => array(), 'lang' => $this->__defaultLang
+			'plugin' => 'plugin_js',
+			'controller' => 'js_file',
+			'named' => array(),
+			'pass' => array(),
+			'action' => 'index',
+			'lang' => 'eng'
 		);
 		$this->assertEquals($result, $expected);
 
-		$result = Router::parse('/admin/plugin_js/js_file');
-		$expected['prefix'] = 'admin';
-		$expected['admin'] = true;
-		$expected['action'] = 'admin_index';
-		$this->assertEquals($result, $expected);
+		$result = Router::parse('/admin/i18nController/js_file');
+		$expected = array(
+			'prefix' => 'admin',
+			'controller' => 'i18nController',
+			'action' => 'admin_js_file',
+			'named' => array(),
+			'pass' => array(),
+			'admin' => true,
+			'plugin' => null,
+			'lang' => 'eng'
+		);
 
-		$result = Router::parse('/spa/admin/plugin_js/js_file');
-		$expected['lang'] = 'spa';
+		$this->assertEquals($expected, $result);
+
+		$result = Router::parse('/spa/admin/i18nController/js_file');
+		$expected = array(
+			'prefix' => 'admin',
+			'lang' => 'spa',
+			'controller' => 'i18nController',
+			'action' => 'admin_js_file',
+			'named' => array(),
+			'pass' => array(),
+			'admin' => true,
+			'plugin' => null
+		);
 		$this->assertEquals($result, $expected);
 
 		$result = Router::parse('/spa/plugin_js/js_file');
-		unset($expected['admin'], $expected['prefix']);
-		$expected['action'] = 'index';
+		$expected = array(
+			'lang' => 'spa',
+			'plugin' => 'plugin_js',
+			'controller' => 'js_file',
+			'named' => array(),
+			'pass' => array(),
+			'action' => 'index'
+		);
 		$this->assertEquals($result, $expected);
 	}
 
@@ -327,10 +354,10 @@ class I18nRouteTestCase extends CakeTestCase {
 		Router::connect('/', array('controller' => 'pages', 'action' => 'display', 'home'), array('routeClass' => 'I18nRoute'));
 		Router::connect('/pages/*', array('controller' => 'pages', 'action' => 'display'), array('routeClass' => 'I18nRoute'));
 		$result = Router::url(array('controller' => 'pages', 'action' => 'display', 'home'));
-		$expected = '/';
-		$this->assertEquals($result, $expected);
+		$expected = '/pages/display/home';
+		$this->assertEquals($expected, $result);
 		$result = Router::parse($result);
-		$expected = array('named' => array(), 'pass' => array('home'), 'controller' => 'pages', 'action' => 'display', 'plugin' => null);
-		$this->assertEquals($result, $expected);
+		$expected = array('named' => array(), 'pass' => array('display', 'home'), 'controller' => 'pages', 'action' => 'display', 'plugin' => null,	'lang' => 'eng');
+		$this->assertEquals($expected, $result);
 	}
 }
