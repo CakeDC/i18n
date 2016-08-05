@@ -116,7 +116,7 @@ class TranslationsController extends I18nAppController {
 			'search',
 			'conditions' => $conditions
 		);
-		$this->set('translations', $this->Paginator->paginate());
+		$this->set('translations', $this->Paginator->paginate($this->modelClass));
 	}
 
 /**

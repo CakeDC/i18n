@@ -244,6 +244,7 @@ class I18nRouteTestCase extends CakeTestCase {
  * @access public
  */
 	public function testConnectDefaultRoutes() {
+		Configure::write('Config.language', 'spa');
 		App::build(array(
 			'Plugin' => array(
 				CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS

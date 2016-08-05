@@ -88,7 +88,11 @@ class TranslationControllerTest extends CakeTestCase {
 
 		$this->Translations = $this->__buildTranslationInstance();
 		$this->Translations->constructClasses();
-		$this->Translations->Prg->initialize($this->Translations);
+		if (CakePlugin::loaded('Search')) {
+			$this->Translations->Prg = $this->getMock('PrgComponent',
+				array('commonProcess'),
+				array($this->Translations->Components, array()));
+		}
 		$this->Translations->params = array(
 			'named' => array(),
 			'pass' => array(),
@@ -138,6 +142,7 @@ class TranslationControllerTest extends CakeTestCase {
  * @return void
  */
 	public function testAdminIndex() {
+		$this->Translations->passedArgs = array();
 		$this->Translations->admin_index();
 		$this->assertTrue(!empty($this->Translations->viewVars['translations']));
 	}
