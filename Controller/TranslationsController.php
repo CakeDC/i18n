@@ -86,10 +86,10 @@ class TranslationsController extends I18nAppController {
 /**
  * Wrapper for CakePlugin::loaded()
  *
+ * @param string $plugin plugin to be loaded
+ * @param bool $exception bool to check if exception should to be thrown
  * @throws MissingPluginException
- * @param string $plugin
- * @param boolean $exceiption
- * @return boolean
+ * @return bool
  */
 	protected function _pluginLoaded($plugin, $exception = true) {
 		$result = CakePlugin::loaded($plugin);
@@ -102,26 +102,28 @@ class TranslationsController extends I18nAppController {
 /**
  * Admin index for translation.
  * 
+ * @return void
  * @access public
  */
 	public function admin_index() {
+		$conditions = array();
 		if ($this->_pluginLoaded('Search', false)) {
 			$this->Prg->commonProcess();
 			$conditions = $this->Translation->parseCriteria($this->passedArgs);
-		} else {
-			$conditions= array();
 		}
+
 		$this->Paginator->settings = array(
 			'search',
 			'conditions' => $conditions
 		);
-		$this->set('translations', $this->Paginator->paginate());
+		$this->set('translations', $this->Paginator->paginate($this->modelClass));
 	}
 
 /**
  * Admin view for translation.
  *
- * @param string $id, translation id 
+ * @param string $id translation id 
+ * @return void
  * @access public
  */
 	public function admin_view($id = null) {
@@ -137,6 +139,7 @@ class TranslationsController extends I18nAppController {
 /**
  * Admin add for translation.
  * 
+ * @return void
  * @access public
  */
 	public function admin_add() {
@@ -157,7 +160,8 @@ class TranslationsController extends I18nAppController {
 /**
  * Admin edit for translation.
  *
- * @param string $id, translation id 
+ * @param string $id translation id 
+ * @return void
  * @access public
  */
 	public function admin_edit($id = null) {
@@ -178,20 +182,22 @@ class TranslationsController extends I18nAppController {
 /**
  * Admin edit for translation.
  *
- * @param string $id, translation id 
+ * @param string $model model name
+ * @param string $foreignKey id of the data that is being saved
+ * @return void
  * @access public
  */
 	public function admin_edit_multi($model, $foreignKey) {
 		$locales = Configure::read('Config.locales.available');
 		$this->set(compact('model', 'foreignKey', 'locales'));
 		try {
-			$result = $this->Translation->edit_multi($model, $foreignKey, $this->data);
+			$result = $this->Translation->editMulti($model, $foreignKey, $this->data);
 			if ($result === true) {
 				$this->Session->setFlash(__('Translation saved', true));
 			} else {
-				$this->set('translations', $result);
 				$this->data = $result;
 			}
+			$this->set('translations', $result);
 		} catch (OutOfBoundsException $e) {
 			$this->Session->setFlash($e->getMessage());
 		}
@@ -200,7 +206,8 @@ class TranslationsController extends I18nAppController {
 /**
  * Admin delete for translation.
  *
- * @param string $id, translation id 
+ * @param string $id translation id 
+ * @return void
  * @access public
  */
 	public function admin_delete($id = null) {

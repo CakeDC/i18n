@@ -89,5 +89,4 @@ class UserFixture extends CakeTestFixture {
 			'modified' => '2008-03-25 02:45:46'
 		),
 	);
-
 }

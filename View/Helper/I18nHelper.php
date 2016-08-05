@@ -112,8 +112,8 @@ class I18nHelper extends AppHelper {
 /**
  * Returns all the available languages on the website
  *
- * @param boolean $includeCurrent Whether or not the current language must be included in the result
- * @param bool    $realNames
+ * @param bool $includeCurrent Whether or not the current language must be included in the result
+ * @param bool $realNames real name values
  * @return array List of available language codes
  */
 	public function availableLanguages($includeCurrent = true, $realNames = false) {
@@ -154,7 +154,7 @@ class I18nHelper extends AppHelper {
  */
 	protected function _getCatalog() {
 		if (empty($this->L10n)) {
-			App::import('Core', 'L10n');
+			App::uses('I18n', 'L10n');
 			$this->L10n = new L10n();
 		}
 		return $this->L10n;
