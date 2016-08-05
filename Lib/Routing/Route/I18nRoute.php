@@ -22,7 +22,7 @@ class I18nRoute extends CakeRoute {
 /**
  * Internal flag to know whether default routes were mapped or not
  * 
- * @var boolean
+ * @var bool
  */
 	private static $__defaultsMapped = false;
 
@@ -60,10 +60,10 @@ class I18nRoute extends CakeRoute {
 			'lang' => join('|', (array)Configure::read('Config.languages')),
 		));
 		unset($options['disableAutoNamedLang']);
-
 		if ($template == '/:lang/') {
 			$template = '/:lang';
 		}
+
 		parent::__construct($template, $defaults, $options);
 	}
 
@@ -115,7 +115,7 @@ class I18nRoute extends CakeRoute {
 /**
  * Whether the default language code should be removed from the matched url
  *
- * @return boolean
+ * @return bool
  */
 	protected function _shouldStripDefaultLanguageOnMatch() {
 		$hasNamedParam = strpos($this->template, ':lang') !== false;

@@ -60,5 +60,4 @@ class TranslationFixture extends CakeTestFixture {
 			'content' => 'sample content.'
 		),
 	);
-
 }

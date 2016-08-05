@@ -98,6 +98,7 @@ class I18nRouteTestCase extends CakeTestCase {
 /**
  * test that routes match their pattern.
  *
+ * @covers I18nRoute::match
  * @return void
  */
 	public function testMatchBasic() {
@@ -114,7 +115,6 @@ class I18nRouteTestCase extends CakeTestCase {
 		$result = $route->match(array('plugin' => null, 'controller' => 'posts', 'action' => 'view', 'id' => 1, 'lang' => 'fre'));
 		$this->assertEquals($result, '/fre/posts/view/1');
 
-
 		$route = new I18nRoute('/', array('controller' => 'pages', 'action' => 'display', 'home'));
 		$result = $route->match(array('controller' => 'pages', 'action' => 'display', 'home'));
 		$this->assertEquals($result, '/spa');
@@ -126,7 +126,6 @@ class I18nRouteTestCase extends CakeTestCase {
 		$result = $route->match(array('controller' => 'pages', 'action' => 'display', 'about'));
 		$this->assertEquals($result, '/spa/pages/about');
 
-
 		$route = new I18nRoute('/blog/:action', array('controller' => 'posts'));
 		$result = $route->match(array('controller' => 'posts', 'action' => 'view'));
 		$this->assertEquals($result, '/spa/blog/view');
@@ -134,11 +133,9 @@ class I18nRouteTestCase extends CakeTestCase {
 		$result = $route->match(array('controller' => 'nodes', 'action' => 'view'));
 		$this->assertFalse($result);
 
-
 		$route = new I18nRoute('/foo/:controller/:action', array('action' => 'index'));
 		$result = $route->match(array('controller' => 'posts', 'action' => 'view'));
 		$this->assertEquals($result, '/spa/foo/posts/view');
-
 
 		$route = new I18nRoute('/admin/subscriptions/:action/*', array(
 			'controller' => 'subscribe', 'admin' => true, 'prefix' => 'admin'
@@ -150,13 +147,25 @@ class I18nRouteTestCase extends CakeTestCase {
 		$this->assertEquals($result, $expected);
 	}
 
-	public function testMatch_ShouldNotRemoveDefaultLangWhenContainedInTemplate() {
+/**
+ * testMatch_ShouldNotRemoveDefaultLangWhenContainedInTemplate method
+ *
+ * @covers I18nRoute::match
+ * @return void
+ */
+	public function testMatchShouldNotRemoveDefaultLangWhenContainedInTemplate() {
 		$route = new I18nRoute('/:lang/pages/*', array('controller' => 'pages', 'action' => 'display'));
 		$result = $route->match(array('controller' => 'pages', 'action' => 'display', 'home', 'lang' => $this->__defaultLang));
 		$this->assertEquals('/' . $this->__defaultLang . '/pages/home', $result);
 	}
 
-	public function testMatch_ShouldNotRemoveDefaultLangWhenUsedInRouteContent() {
+/**
+ * testMatch_ShouldNotRemoveDefaultLangWhenUsedInRouteContent method
+ *
+ * @covers I18nRoute::match
+ * @return void
+ */
+	public function testMatchShouldNotRemoveDefaultLangWhenUsedInRouteContent() {
 		$routeStartsChunk = '/' . $this->__defaultLang . '/pages';
 		$route = new I18nRoute(
 			$routeStartsChunk . '/*',
@@ -182,10 +191,12 @@ class I18nRouteTestCase extends CakeTestCase {
 			'action' => 'index',
 			'named' => array (
 				'page' => '1',
-				'limit' => '3',),
-			'pass' => array (),
+				'limit' => '3'
+			),
+			'pass' => array(),
 			'admin' => true,
-			'plugin' => null);
+			'plugin' => null
+		);
 
 		$result = Router::url(array(
 			'admin' => true,
@@ -193,7 +204,8 @@ class I18nRouteTestCase extends CakeTestCase {
 			'action' => 'index',
 			'lang' => 'eng',
 			'page' => 1,
-			'limit' => 3));
+			'limit' => 3
+		));
 		$this->assertEquals($result, '/eng/admin/posts/index/page:1/limit:3');
 	}
 
@@ -209,39 +221,7 @@ class I18nRouteTestCase extends CakeTestCase {
 
 		Router::connect('/', array('controller' => 'pages', 'action' => 'display', 'home'), array('routeClass' => 'I18nRoute'));
 		include CakePlugin::path('I18n') . 'Config' . DS . 'routes.php';
-		/*
-		$result = Router::parse('/');
-		$expected = array(
-			'plugin' => null, 'controller' => 'pages', 'action' => 'display',
-			'named' => array(), 'pass' => array('home'), 'lang' => $this->__defaultLang
-		);
-		$this->assertEquals($expected, $result);
-		$this->assertEquals(Configure::read('Config.language'), $this->__defaultLang);
 
-		$result = Router::parse('/posts/view/42');
-		$expected = array(
-			'plugin' => null, 'controller' => 'posts', 'action' => 'view',
-			'named' => array(), 'pass' => array(42), 'lang' => $this->__defaultLang
-		);
-		$this->assertEquals($expected, $result);
-
-		$result = Router::parse('/admin/posts/view/42');
-		$expected = array(
-			'plugin' => null, 'controller' => 'posts', 'action' => 'admin_view', 'admin' => true
-			'named' => array(), 'pass' => array(42), 'lang' => $this->__defaultLang, 'prefix' => 'admin'
-		);
-
-		$this->assertEquals($expected, $result);
-
-		$result = Router::parse('/spa');
-		$expected = array(
-			'plugin' => null, 'controller' => 'pages', 'action' => 'display',
-			'named' => array(), 'pass' => array('home'), 'lang' => 'spa'
-		);
-		$this->assertEquals($expected, $result);
-		$this->assertEquals(Configure::read('Config.language'), 'spa');
-
-		*/
 		$result = Router::parse('/spa/posts/view/42');
 		$expected = array(
 			'plugin' => null, 'controller' => 'posts', 'action' => 'view',
@@ -273,7 +253,6 @@ class I18nRouteTestCase extends CakeTestCase {
 		Configure::write('Routing.prefixes', array('admin'));
 		Router::reload();
 		include CakePlugin::path('I18n') . 'Config' . DS . 'routes.php';
-
 
 		$result = Router::url(array('plugin' => 'plugin_js', 'controller' => 'js_file', 'action' => 'index'));
 		$this->assertEquals($result, '/spa/plugin_js/js_file');
@@ -327,10 +306,20 @@ class I18nRouteTestCase extends CakeTestCase {
 		Router::connect('/', array('controller' => 'pages', 'action' => 'display', 'home'), array('routeClass' => 'I18nRoute'));
 		Router::connect('/pages/*', array('controller' => 'pages', 'action' => 'display'), array('routeClass' => 'I18nRoute'));
 		$result = Router::url(array('controller' => 'pages', 'action' => 'display', 'home'));
-		$expected = '/';
+		$expected = '/pages/display/home';
 		$this->assertEquals($result, $expected);
 		$result = Router::parse($result);
-		$expected = array('named' => array(), 'pass' => array('home'), 'controller' => 'pages', 'action' => 'display', 'plugin' => null);
+		$expected = array(
+			'named' => array(),
+			'pass' => array(
+				'display',
+				'home'
+			),
+			'controller' => 'pages',
+			'action' => 'display',
+			'plugin' => null,
+			'lang' => 'eng'
+		);
 		$this->assertEquals($result, $expected);
 	}
 }

@@ -81,7 +81,7 @@ class Translation extends I18nAppModel {
  * @link https://github.com/CakeDC/utils
  */
 	protected function _setupBehaviors() {
-		if (CakePlugin::loaded('Search') && class_exists('SearchableBehavior')) {
+		if (CakePlugin::loaded('Search')) {
 			$this->actsAs[] = 'Search.Searchable';
 		}
 	}
@@ -98,7 +98,8 @@ class Translation extends I18nAppModel {
 /**
  * Adds a new record to the database
  *
- * @param array post data, should be Contoller->data
+ * @param array $data should be Contoller->data
+ * @throws OutOfBoundsException If the element could not be saved
  * @return array
  */
 	public function add($data = null) {
@@ -118,8 +119,8 @@ class Translation extends I18nAppModel {
 /**
  * Edits an existing Translation.
  *
- * @param string $id, translation id
- * @param array $data, controller post data usually $this->data
+ * @param string $id translation id
+ * @param array $data controller post data usually $this->data
  * @return mixed True on successfully save else post data as array
  * @throws OutOfBoundsException If the element does not exists
  * @access public
@@ -152,13 +153,14 @@ class Translation extends I18nAppModel {
 /**
  * Edits an existing Translation.
  *
- * @param string $id, translation id
- * @param array $data, controller post data usually $this->data
- * @return mixed True on successfully save else post data as array
+ * @param string $model model name
+ * @param string $foreignKey id of the data that is being saved
+ * @param array $data controller post data usually $this->data
  * @throws OutOfBoundsException If the element does not exists
+ * @return mixed True on successfully save else post data as array
  * @access public
  */
-	public function edit_multi($model, $foreignKey, $data = null) {
+	public function editMulti($model, $foreignKey, $data = null) {
 		$translations = $this->find('all', array(
 			'order' => array('locale'),
 			'conditions' => array(
@@ -170,9 +172,6 @@ class Translation extends I18nAppModel {
 		if (empty($translations)) {
 			throw new OutOfBoundsException(__('Invalid Translation', true));
 		}
-
-		// @@todo code here
-		// $this->set($translation);
 
 		if (!empty($data[$this->alias])) {
 			foreach ($data[$this->alias] as $locale => $fields) {
@@ -202,9 +201,9 @@ class Translation extends I18nAppModel {
 /**
  * Returns the record of a Translation.
  *
- * @param string $id, translation id.
- * @return array
+ * @param string $id translation id.
  * @throws OutOfBoundsException If the element does not exists
+ * @return array
  */
 	public function view($id = null) {
 		$translation = $this->find('first', array(
@@ -221,10 +220,11 @@ class Translation extends I18nAppModel {
 /**
  * Validates the deletion
  *
- * @param string $id, translation id
- * @param array $data, controller post data usually $this->data
- * @return boolean True on success
+ * @param string $id translation id
+ * @param array $data controller post data usually $this->data
  * @throws OutOfBoundsException If the element does not exists
+ * @throws Exception if the deletation was not confimed
+ * @return bool true on success
  */
 	public function validateAndDelete($id = null, $data = array()) {
 		$translation = $this->find('first', array(
@@ -259,9 +259,9 @@ class Translation extends I18nAppModel {
 /**
  * Perform search request
  *
- * @param string $state
- * @param array $query
- * @param array $results
+ * @param string $state State
+ * @param array $query query arguments
+ * @param array $results Results from query
  * @return array
  */
 	protected function _findSearch($state, $query, $results = array()) {

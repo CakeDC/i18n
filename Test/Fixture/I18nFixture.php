@@ -25,7 +25,7 @@ class I18nFixture extends CakeTestFixture {
  * @var string
  * @access public
  */
-	public $table = 'I18n';
+	public $table = 'i18n';
 
 /**
  * Fields
@@ -69,5 +69,4 @@ class I18nFixture extends CakeTestFixture {
 			'content' => 'sample content.'
 		)
 	);
-
 }

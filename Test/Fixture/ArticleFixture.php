@@ -20,7 +20,6 @@ class ArticleFixture extends CakeTestFixture {
 /**
  * name property
  *
- * @var string 'AnotherArticle'
  * @access public
  */
 	public $name = 'Article';
@@ -32,7 +31,7 @@ class ArticleFixture extends CakeTestFixture {
  * @access public
  */
 	public $fields = array(
-		'id' => array('type'=>'string', 'null' => false, 'length' => 36, 'key' => 'primary'), 
+		'id' => array('type' => 'string', 'null' => false, 'length' => 36, 'key' => 'primary'),
 		'title' => array('type' => 'string', 'null' => false),
 		'language_id' => array('type' => 'string', 'null' => true),
 		'created' => array('type' => 'datetime'),
@@ -47,19 +46,16 @@ class ArticleFixture extends CakeTestFixture {
  */
 	public $records = array(
 		array(
-			'id' => 'article-1', 
-			'title' => 'First Article', 
+			'id' => 'article-1',
+			'title' => 'First Article',
 			'language_id' => 'eng',
-			'created' => '2007-03-18 10:39:23', 
+			'created' => '2007-03-18 10:39:23',
 			'updated' => '2007-03-18 10:41:31'),
 		array(
-			'id' => 'article-2', 
-			'title' => 'First Article', 
+			'id' => 'article-2',
+			'title' => 'First Article',
 			'language_id' => 'fra',
-			'created' => '2007-03-18 10:39:23', 
+			'created' => '2007-03-18 10:39:23',
 			'updated' => '2007-03-18 10:41:31'),
 	);
-
 }
-
-?>
