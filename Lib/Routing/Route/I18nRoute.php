@@ -43,6 +43,9 @@ class I18nRoute extends CakeRoute {
  * @return \I18nRoute
  */
 	public function __construct($template, $defaults = array(), $options = array()) {
+		if (!defined('DEFAULT_LANGUAGE')) {
+			define('DEFAULT_LANGUAGE', 'en');
+		}
 		if (strpos($template, ':lang') === false && empty($options['disableAutoNamedLang'])) {
 			Router::connect(
 				$template,
@@ -54,7 +57,7 @@ class I18nRoute extends CakeRoute {
 		}
 
 		$options = array_merge((array)$options, array(
-			'lang' => join('|', Configure::read('Config.languages')),
+			'lang' => join('|', (array)Configure::read('Config.languages')),
 		));
 		unset($options['disableAutoNamedLang']);
 

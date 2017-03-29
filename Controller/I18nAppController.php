@@ -8,6 +8,7 @@
  * @copyright Copyright 2009-2014, Cake Development Corporation (http://cakedc.com)
  * @license MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
+App::uses('AppController', 'Controller');
 
 App::uses('AppController', 'Controller');
 
@@ -17,5 +18,4 @@ App::uses('AppController', 'Controller');
  * @package I18n.Controller
  */
 class I18nAppController extends AppController {
-	
 }
