@@ -105,16 +105,17 @@ class TranslationsController extends I18nAppController {
  * @access public
  */
 	public function admin_index() {
+		$conditions = array();
 		if ($this->_pluginLoaded('Search', false)) {
 			$this->Prg->commonProcess();
 			$conditions = $this->Translation->parseCriteria($this->passedArgs);
-		} else {
-			$conditions= array();
 		}
+
 		$this->Paginator->settings = array(
 			'search',
 			'conditions' => $conditions
 		);
+
 		$this->set('translations', $this->Paginator->paginate());
 	}
 

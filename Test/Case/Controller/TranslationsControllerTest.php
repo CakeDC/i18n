@@ -21,6 +21,10 @@ class TranslationsControllerTestCase extends CakeTestCase {
  */
 	protected $_testsToRun = array();
 
+	public $fixtures = array(
+		'plugin.i18n.i18n'
+	);
+
 /**
  * Start Test callback
  *
@@ -28,15 +32,15 @@ class TranslationsControllerTestCase extends CakeTestCase {
  */
 	public function setUp() {
 		parent::setUp();
-		$this->Translations = new TranslationsController();
+		$this->Translations = new TranslationsController(new CakeRequest(), new CakeResponse());
 		$this->Translations->constructClasses();
 		$this->Translations->Prg->initialize($this->Translations);
 		$this->Translations->params = array(
 			'named' => array(),
 			'pass' => array(),
-			'url' => array());
-		$fixture = new I18nFixture();
-		$this->record = array('Translation' => $fixture->records[0]);
+			'url' => array()
+		);
+		$this->record = $this->Translations->Translation->find('first');
 	}
 
 /**

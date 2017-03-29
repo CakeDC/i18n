@@ -37,13 +37,29 @@ class Translation extends I18nAppModel {
  */
 	public $validate = array(
 		'locale' => array(
-			'notempty' => array('rule' => array('notempty'), 'required' => true, 'allowEmpty' => false, 'message' => 'Please enter a Locale')),
+			'rule' => array('notBlank'),
+			'required' => true,
+			'allowEmpty' => false,
+			'message' => 'Please enter a Locale'
+		),
 		'model' => array(
-			'notempty' => array('rule' => array('notempty'), 'required' => true, 'allowEmpty' => false, 'message' => 'Please enter a Model')),
+			'rule' => array('notBlank'),
+			'required' => true,
+			'allowEmpty' => false,
+			'message' => 'Please enter a Model'
+		),
 		'foreign_key' => array(
-			'notempty' => array('rule' => array('notempty'), 'required' => true, 'allowEmpty' => false, 'message' => 'Please enter a Foreign Key')),
+			'rule' => array('notBlank'),
+			'required' => true,
+			'allowEmpty' => false,
+			'message' => 'Please enter a Foreign Key'
+		),
 		'field' => array(
-			'notempty' => array('rule' => array('notempty'), 'required' => true, 'allowEmpty' => false, 'message' => 'Please enter a Field')),
+			'rule' => array('notBlank'),
+			'required' => true,
+			'allowEmpty' => false,
+			'message' => 'Please enter a Field'
+		),
 	);
 
 /**
@@ -106,12 +122,11 @@ class Translation extends I18nAppModel {
 			$this->create();
 			$result = $this->save($data);
 			if ($result !== false) {
-				$this->data = array_merge($data, $result);
-				return true;
+				$this->data = Hash::merge($data, $result);
+				return $return;
 			} else {
 				throw new OutOfBoundsException(__('Could not save the translation, please check your inputs.', true));
 			}
-			return $return;
 		}
 	}
 
@@ -128,7 +143,8 @@ class Translation extends I18nAppModel {
 		$translation = $this->find('first', array(
 			'conditions' => array(
 				"{$this->alias}.{$this->primaryKey}" => $id,
-				)));
+			)
+		));
 
 		if (empty($translation)) {
 			throw new OutOfBoundsException(__('Invalid Translation', true));
@@ -141,12 +157,12 @@ class Translation extends I18nAppModel {
 			if ($result) {
 				$this->data = $result;
 				return true;
-			} else {
-				return $data;
 			}
-		} else {
-			return $translation;
+			
+			return $data;
 		}
+
+		return $translation;
 	}
 
 /**
@@ -175,28 +191,29 @@ class Translation extends I18nAppModel {
 		// $this->set($translation);
 
 		if (!empty($data[$this->alias])) {
-			foreach ($data[$this->alias] as $locale => $fields) {
-				foreach ($fields as $field => $_data) {
-					if (!empty($_data['id'])) {
-						$record = $this->read(null, $_data['id']);
-						$record[$this->alias]['content'] = $_data['content'];
-						$this->save($record);
-					} else {
-						$record = array('Translation' => array(
-							'model' => $model,
-							'foreign_key' => $foreignKey,
-							'locale' => $locale,
-							'field' => $field,
-							'content' => $_data['content']));
-							$this->create($record);
-							$this->save($record);
-					}
+			foreach ($data[$this->alias] as $locale => $fields) {	
+				if (!empty($fields['id'])) {
+					$record = $this->read(null, $_data['id']);
+					$record[$this->alias]['content'] = $_data['content'];
+					$this->set($record);
+					$this->save($record);
+				} else {
+					$record = array('Translation' => array(
+						'model' => $model,
+						'foreign_key' => $foreignKey,
+						'locale' => $fields['locale'],
+						'field' => $fields['field'],
+						'content' => $fields['content']
+					));
+					$this->create($record);
+					$this->save($record);
 				}
 			}
+
 			return true;
-		} else {
-			return $translations;
 		}
+
+		return $translations;
 	}
 
 /**
@@ -209,7 +226,9 @@ class Translation extends I18nAppModel {
 	public function view($id = null) {
 		$translation = $this->find('first', array(
 			'conditions' => array(
-				"{$this->alias}.{$this->primaryKey}" => $id)));
+				"{$this->alias}.{$this->primaryKey}" => $id
+			)
+		));
 
 		if (empty($translation)) {
 			throw new OutOfBoundsException(__('Invalid Translation', true));
@@ -225,13 +244,14 @@ class Translation extends I18nAppModel {
  * @param array $data, controller post data usually $this->data
  * @return boolean True on success
  * @throws OutOfBoundsException If the element does not exists
+ * @throws Exception If the confirmation was not send
  */
 	public function validateAndDelete($id = null, $data = array()) {
 		$translation = $this->find('first', array(
 			'conditions' => array(
 				"{$this->alias}.{$this->primaryKey}" => $id,
-			))
-		);
+			)
+		));
 
 		if (empty($translation)) {
 			throw new OutOfBoundsException(__('Invalid Translation', true));
@@ -242,8 +262,9 @@ class Translation extends I18nAppModel {
 			$data['Translation']['id'] = $id;
 			$tmp = $this->validate;
 			$this->validate = array(
-				'id' => array('rule' => 'notEmpty'),
-				'confirm' => array('rule' => '[1]'));
+				'id' => array('rule' => 'notBlank'),
+				'confirm' => array('rule' => '[1]')
+			);
 
 			$this->set($data);
 			if ($this->validates()) {
@@ -259,14 +280,13 @@ class Translation extends I18nAppModel {
 /**
  * Perform search request
  *
- * @param string $state
- * @param array $query
- * @param array $results
+ * @param string $state query state
+ * @param array $query array
+ * @param array $results results
  * @return array
  */
 	protected function _findSearch($state, $query, $results = array()) {
 		if ($state == 'before') {
-			//$query = Set::merge($defaults, $query);
 			if (!empty($query['operation']) && $query['operation'] === 'count') {
 				unset($query['limit']);
 				$query = $this->_findCount('before', $query, $results);

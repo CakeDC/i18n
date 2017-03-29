@@ -128,9 +128,9 @@ class I18nRoute extends CakeRoute {
 	public function getDefaultLanguage() {
 		$lang = Configure::read('Config.languageOverride');
 		if (empty($lang)) {
-			$lang = Configure::read('Config.language');
-			return $lang;
+			return Configure::read('Config.language');
 		}
+
 		return $lang;
 	}
 
