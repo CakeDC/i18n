@@ -34,7 +34,9 @@ class TranslationsControllerTestCase extends CakeTestCase {
 		parent::setUp();
 		$this->Translations = new TranslationsController(new CakeRequest(), new CakeResponse());
 		$this->Translations->constructClasses();
-		$this->Translations->Prg->initialize($this->Translations);
+		if (CakePlugin::loaded('Search')) {
+			$this->Translations->Prg->initialize($this->Translations);
+		}
 		$this->Translations->params = array(
 			'named' => array(),
 			'pass' => array(),
