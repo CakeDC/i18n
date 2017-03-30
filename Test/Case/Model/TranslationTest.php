@@ -138,7 +138,9 @@ class TranslationTestCase extends CakeTestCase {
 		try {
 			$postData = array(
 				'Translation' => array(
-					'confirm' => 0));
+					'confirm' => 0
+				)
+			);
 			$result = $this->Translation->validateAndDelete('translation-1', $postData);
 		} catch (Exception $e) {
 			$this->assertEquals($e->getMessage(), 'You need to confirm to delete this Translation');
@@ -146,7 +148,9 @@ class TranslationTestCase extends CakeTestCase {
 
 		$postData = array(
 			'Translation' => array(
-				'confirm' => 1));
+				'confirm' => 1
+			)
+		);
 		$result = $this->Translation->validateAndDelete('translation-1', $postData);
 		$this->assertTrue($result);
 	}

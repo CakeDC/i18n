@@ -100,7 +100,7 @@ class SluggableRoute extends CakeRoute {
 	public function slug($slug) {
 		$str = $slug['_field'];
 		if ($slug['_count'] > 1 || (isset($this->options['prependPk']) && $this->options['prependPk'])) {
-			$str = $slug['_pk'].' '.$str;
+			$str = $slug['_pk'] . ' ' . $str;
 		}
 		return $this->_slug($str);
 	}
@@ -129,10 +129,10 @@ class SluggableRoute extends CakeRoute {
  */
 	public function getSlugs($modelName, $field = null) {
 		$cacheConfig = $this->_initSluggerCache();
-		if (!isset($this->{$modelName.'_slugs'})) {
-			$this->{$modelName.'_slugs'} = Cache::read($modelName.'_slugs', $cacheConfig);
+		if (!isset($this->{$modelName . '_slugs'})) {
+			$this->{$modelName . '_slugs'} = Cache::read($modelName.'_slugs', $cacheConfig);
 		}
-		if (empty($this->{$modelName.'_slugs'})) {
+		if (empty($this->{$modelName . '_slugs'})) {
 			$Model = ClassRegistry::init($modelName);
 			if ($Model === false) {
 				return false;
@@ -142,21 +142,21 @@ class SluggableRoute extends CakeRoute {
 			}
 			$slugs = $Model->find('all', array(
 				'fields' => array(
-					$Model->name.'.'.$Model->primaryKey,
-					$Model->name.'.'.$field,
+					$Model->name . '.' . $Model->primaryKey,
+					$Model->name . '.' . $field,
 				),
 				'recursive' => -1
 			));
 			$counts = $Model->find('all', array(
 				'fields' => array(					
-					'LOWER(TRIM('.$Model->name.'.'.$field.')) AS '.$field,
+					'LOWER(TRIM(' . $Model->name . '.' . $field . ')) AS ' . $field,
 					'COUNT(*) AS count'
 				),
 				'group' => array(
 					$field
 				)
 			));
-			$counts = Set::combine($counts, '{n}.0.'.$field, '{n}.0.count');
+			$counts = Set::combine($counts, '{n}.0.' . $field, '{n}.0.count');
 			$listedSlugs = array();
 			foreach ($slugs as $pk => $fields) {
 				$values = array(
@@ -166,11 +166,11 @@ class SluggableRoute extends CakeRoute {
 				);
 				$listedSlugs[$fields[$Model->name][$Model->primaryKey]] = $this->slug($values);
 			}
-			Cache::write($modelName.'_slugs', $listedSlugs, $cacheConfig);
-			$this->{$modelName.'_slugs'} = $listedSlugs;
+			Cache::write($modelName . '_slugs', $listedSlugs, $cacheConfig);
+			$this->{$modelName . '_slugs'} = $listedSlugs;
 		}
-		
-		return $this->{$modelName.'_slugs'};
+
+		return $this->{$modelName . '_slugs'};
 	}
 
 /**
@@ -184,10 +184,10 @@ class SluggableRoute extends CakeRoute {
 		$cacheConfig = $this->_initSluggerCache();
 
 		if (is_null($id)) {
-			$result = Cache::delete($modelName.'_slugs', $cacheConfig);
-			unset($this->{$modelName.'_slugs'});
+			$result = Cache::delete($modelName . '_slugs', $cacheConfig);
+			unset($this->{$modelName . '_slugs'});
 		} else {
-			$slugs = Cache::read($modelName.'_slugs', $cacheConfig);
+			$slugs = Cache::read($modelName . '_slugs', $cacheConfig);
 			if ($slugs === false) {
 				$result = false;
 			} else {
@@ -195,10 +195,10 @@ class SluggableRoute extends CakeRoute {
 				if ($slugs[$id] === false) {
 					unset($slugs[$id]);
 				}
-				if (isset($this->{$modelName.'_slugs'}) && $slugs[$id] !== false) {
-					$this->{$modelName.'_slugs'}[$id] = $slugs[$id];
+				if (isset($this->{$modelName . '_slugs'}) && $slugs[$id] !== false) {
+					$this->{$modelName . '_slugs'}[$id] = $slugs[$id];
 				}
-				$result = Cache::write($modelName.'_slugs', $slugs, $cacheConfig);
+				$result = Cache::write($modelName . '_slugs', $slugs, $cacheConfig);
 			}
 		}
 
@@ -230,11 +230,11 @@ class SluggableRoute extends CakeRoute {
 						$slugField = $Model->displayField;
 					}
 					$text = $Model->field($slugField, array(
-						$Model->name.'.'.$Model->primaryKey => $id
+						$Model->name . '.' . $Model->primaryKey => $id
 					));
 					if ($text !== false) {
 						$count = $Model->find('count', array(
-							'conditions' => array($Model->name.'.'.$slugField => $text)
+							'conditions' => array($Model->name . '.' . $slugField => $text)
 						));
 						$values = array('_field' => $text, '_count' => $count, '_pk' => $id);
 						$slug = $this->slug($values);
@@ -257,6 +257,7 @@ class SluggableRoute extends CakeRoute {
 			'duration' => '+1 days',
 			'prefix' => 'slugger_'
 		));
+
 		return 'Slugger';
 	}
 }
