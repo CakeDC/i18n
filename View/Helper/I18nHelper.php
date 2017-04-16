@@ -104,7 +104,7 @@ class I18nHelper extends AppHelper {
 		$result = $this->Html->image($options['basePath'] . $flag . '.png');
 
 		if ($options['appendName'] === true) {
-			$result .= $this->Html->tag('span', $this->getName($lang));
+			$result .= $this->Html->tag('span', '&nbsp;&nbsp;' . $this->getName($lang));
 		}
 		return $result;
 	}
